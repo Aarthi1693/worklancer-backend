@@ -1,0 +1,73 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  ADMIN
+  PROVIDER
+  MASTER
+}
+
+enum ProjectStatus {
+  OPEN
+  IN_PROGRESS
+  REVIEW
+  COMPLETED
+}
+
+model User {
+  id       String @id @default(uuid())
+  name     String
+  email    String @unique
+  password String
+
+  role Role
+
+  skills     String?
+  experience Int?
+  rating     Float   @default(0)
+
+  applications Application[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Project {
+  id String @id @default(uuid())
+
+  title       String
+  description String
+
+  budget Float
+
+  requiredSkills String
+
+  status ProjectStatus @default(OPEN)
+
+  applications Application[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Application {
+  id String @id @default(uuid())
+
+  userId    String
+  projectId String
+
+  matchScore Float @default(0)
+
+  status String @default("PENDING")
+
+  createdAt DateTime @default(now())
+
+  user    User    @relation(fields: [userId], references: [id])
+  project Project @relation(fields: [projectId], references: [id])
+}
