@@ -5,12 +5,17 @@ import {
   Param,
   Post,
   Patch,
+  Delete,
+  UseGuards,
 } from '@nestjs/common';
 import { ProjectStatus } from '@prisma/client';
 
 import { ProjectsService } from './projects.service';
 import { CreateProjectDto } from './dto/create-project.dto';
 import { UpdateProjectStatusDto } from './dto/update-project-status.dto';
+import { UpdateProjectDto } from './dto/update-project.dto';
+
+import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 
 @Controller('projects')
 export class ProjectsController {
@@ -21,15 +26,28 @@ export class ProjectsController {
     return this.projectsService.create(createProjectDto);
   }
 
+  @UseGuards(JwtAuthGuard)
   @Get()
   findAll() {
     return this.projectsService.findAll();
   }
 
-  @Get('status/:status')
-  getProjectsByStatus(
-    @Param('status') status: ProjectStatus,
+  // ✅ Update Project
+  @Patch(':id')
+  update(
+    @Param('id') id: string,
+    @Body() updateProjectDto: UpdateProjectDto,
   ) {
+    return this.projectsService.update(id, updateProjectDto);
+  }
+
+  @Delete(':id')
+remove(@Param('id') id: string) {
+  return this.projectsService.remove(id);
+}
+
+  @Get('status/:status')
+  getProjectsByStatus(@Param('status') status: ProjectStatus) {
     return this.projectsService.getProjectsByStatus(status);
   }
 

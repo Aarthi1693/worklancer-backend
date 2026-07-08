@@ -21,12 +21,17 @@ export class AuthService {
       },
     });
 
-    return user;
+    // Remove password before sending response
+    const { password, ...result } = user;
+
+    return result;
   }
 
   async login(email: string, password: string) {
     const user = await this.prisma.user.findUnique({
-      where: { email },
+      where: {
+        email,
+      },
     });
 
     if (!user) {
@@ -47,6 +52,12 @@ export class AuthService {
 
     return {
       access_token: token,
+      user: {
+        id: user.id,
+        name: user.name,
+        email: user.email,
+        role: user.role,
+      },
     };
   }
 }

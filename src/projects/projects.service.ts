@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateProjectDto } from './dto/create-project.dto';
 import { ProjectStatus } from '@prisma/client';
+import { UpdateProjectDto } from './dto/update-project.dto';
 
 @Injectable()
 export class ProjectsService {
@@ -13,10 +14,28 @@ export class ProjectsService {
     });
   }
 
+  async update(id: string, updateProjectDto: UpdateProjectDto) {
+  return this.prisma.project.update({
+    where: {
+      id,
+    },
+    data: updateProjectDto,
+  });
+}
+
+async remove(id: string) {
+  return this.prisma.project.delete({
+    where: {
+      id,
+    },
+  });
+}
+
   findAll() {
     return this.prisma.project.findMany();
   }
 
+  
   async getProjectsByStatus(status: ProjectStatus) {
     return this.prisma.project.findMany({
       where: {
@@ -27,20 +46,20 @@ export class ProjectsService {
       },
     });
   }
-
   getApplicants(projectId: string) {
-    return this.prisma.application.findMany({
-      where: {
-        projectId,
-      },
-      include: {
-        user: true,
-      },
-      orderBy: {
-        matchScore: 'desc',
-      },
-    });
-  }
+  return this.prisma.application.findMany({
+    where: {
+      projectId,
+    },
+    include: {
+      user: true,
+      project: true,
+    },
+    orderBy: {
+      matchScore: 'desc',
+    },
+  });
+}
 
   async getTopCandidate(projectId: string) {
     const topApplication = await this.prisma.application.findFirst({

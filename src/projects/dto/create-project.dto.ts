@@ -1,6 +1,17 @@
+import { IsNumber, IsString } from 'class-validator';
+import { Type } from 'class-transformer';
+
 export class CreateProjectDto {
-  title!: string;
-  description!: string;
-  budget!: number;
-  requiredSkills!: string;
+  @IsString()
+  title: string;
+
+  @IsString()
+  description: string;
+
+  @Type(() => Number)
+  @IsNumber()
+  budget: number;
+
+  @IsString()
+  requiredSkills: string;
 }
