@@ -1,5 +1,6 @@
-import { IsNumber, IsString } from 'class-validator';
+import { IsEnum, IsNumber, IsString } from 'class-validator';
 import { Type } from 'class-transformer';
+import { TaskType } from '@prisma/client';
 
 export class CreateProjectDto {
   @IsString()
@@ -14,4 +15,7 @@ export class CreateProjectDto {
 
   @IsString()
   requiredSkills: string;
+
+  @IsEnum(TaskType)
+  taskType: TaskType;
 }

@@ -8,6 +8,8 @@ import { DashboardModule } from './dashboard/dashboard.module';
 import { ProviderModule } from './provider/provider.module';
 import { MasterModule } from './master/master.module';
 import { AiModule } from './ai/ai.module';
+import { SubmissionModule } from './submission/submission.module';
+import { CareerAiModule } from './career-ai/career-ai.module';
 
 @Module({
   imports: [
@@ -20,6 +22,8 @@ import { AiModule } from './ai/ai.module';
     ProviderModule,
     MasterModule,
     AiModule,
+    SubmissionModule,
+    CareerAiModule,
   ],
 })
 export class AppModule {}

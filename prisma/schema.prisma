@@ -20,6 +20,17 @@ enum ProjectStatus {
   COMPLETED
 }
 
+enum TaskType {
+  DIGITAL
+  FIELD
+}
+
+enum SubmissionStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
 model User {
   id       String @id @default(uuid())
   name     String
@@ -48,6 +59,8 @@ model Project {
 
   requiredSkills String
 
+  taskType TaskType @default(DIGITAL)
+
   status ProjectStatus @default(OPEN)
 
   applications Application[]
@@ -66,8 +79,38 @@ model Application {
 
   status String @default("PENDING")
 
-  createdAt DateTime @default(now())
-
   user    User    @relation(fields: [userId], references: [id])
   project Project @relation(fields: [projectId], references: [id])
+
+  submission Submission?
+
+  createdAt DateTime @default(now())
+}
+
+model Submission {
+  id String @id @default(uuid())
+
+  applicationId String @unique
+
+  githubLink String?
+
+  deploymentLink String?
+
+  reportFile String?
+
+  imageUrls String?
+
+  location String?
+
+  completionDate DateTime?
+
+  description String
+
+  status SubmissionStatus @default(PENDING)
+
+  application Application @relation(fields: [applicationId], references: [id])
+
+  createdAt DateTime @default(now())
+
+  updatedAt DateTime @updatedAt
 }

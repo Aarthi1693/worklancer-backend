@@ -10,6 +10,11 @@ export class MasterController {
     return this.masterService.getDashboardStats();
   }
 
+  @Get("analytics")
+getAnalytics() {
+  return this.masterService.getAnalytics();
+}
+
   @Get('applications')
   getApplications() {
     return this.masterService.getApplications();
@@ -21,7 +26,7 @@ export class MasterController {
   }
   
   @Get("my-tasks")
-  getMyTasks() {
-  return this.masterService.getApplications();
-   }
+getMyTasks() {
+  return this.masterService.getMyTasks();
+}
 }
