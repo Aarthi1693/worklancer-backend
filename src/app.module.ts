@@ -1,4 +1,5 @@
 import { Module } from '@nestjs/common';
+import { ThrottlerModule } from '@nestjs/throttler';
 import { PrismaModule } from './prisma/prisma.module';
 import { UsersModule } from './users/users.module';
 import { AuthModule } from './auth/auth.module';
@@ -10,9 +11,17 @@ import { MasterModule } from './master/master.module';
 import { AiModule } from './ai/ai.module';
 import { SubmissionModule } from './submission/submission.module';
 import { CareerAiModule } from './career-ai/career-ai.module';
+import { ChatModule } from './chat/chat.module';
 
 @Module({
   imports: [
+    ThrottlerModule.forRoot([
+      {
+        name: 'default',
+        ttl: 60_000,
+        limit: 20,
+      },
+    ]),
     PrismaModule,
     UsersModule,
     AuthModule,
@@ -24,6 +33,7 @@ import { CareerAiModule } from './career-ai/career-ai.module';
     AiModule,
     SubmissionModule,
     CareerAiModule,
+    ChatModule,
   ],
 })
 export class AppModule {}

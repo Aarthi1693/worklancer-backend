@@ -6,10 +6,7 @@ import { PrismaModule } from '../prisma/prisma.module';
 import { AiModule } from '../ai/ai.module';
 
 @Module({
-  imports: [
-    PrismaModule,
-    AiModule,
-  ],
+  imports: [PrismaModule, AiModule],
   controllers: [CareerAiController],
   providers: [CareerAiService],
 })

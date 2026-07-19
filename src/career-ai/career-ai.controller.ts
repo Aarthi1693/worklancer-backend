@@ -3,14 +3,10 @@ import { CareerAiService } from './career-ai.service';
 
 @Controller('career-ai')
 export class CareerAiController {
-  constructor(
-    private readonly careerAiService: CareerAiService,
-  ) {}
+  constructor(private readonly careerAiService: CareerAiService) {}
 
   @Get(':userId')
-  analyzeCareer(
-    @Param('userId') userId: string,
-  ) {
+  analyzeCareer(@Param('userId') userId: string) {
     return this.careerAiService.analyzeCareer(userId);
   }
 }

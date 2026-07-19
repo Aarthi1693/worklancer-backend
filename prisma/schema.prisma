@@ -31,6 +31,14 @@ enum SubmissionStatus {
   REJECTED
 }
 
+enum NotificationType {
+  APPLICATION
+  CHAT
+  PAYMENT
+  PROJECT
+  SYSTEM
+}
+
 model User {
   id       String @id @default(uuid())
   name     String
@@ -43,7 +51,19 @@ model User {
   experience Int?
   rating     Float   @default(0)
 
+  resetToken       String?
+  resetTokenExpiry DateTime?
+
   applications Application[]
+
+  notifications Notification[]
+
+  projects Project[]
+
+  // Chat
+  providerConversations Conversation[] @relation("ProviderConversation")
+  masterConversations   Conversation[] @relation("MasterConversation")
+  messages              Message[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -63,7 +83,13 @@ model Project {
 
   status ProjectStatus @default(OPEN)
 
+  providerId String
+
+provider User @relation(fields: [providerId], references: [id])
+
   applications Application[]
+
+  conversations Conversation[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -79,7 +105,8 @@ model Application {
 
   status String @default("PENDING")
 
-  user    User    @relation(fields: [userId], references: [id])
+  user User @relation(fields: [userId], references: [id])
+
   project Project @relation(fields: [projectId], references: [id])
 
   submission Submission?
@@ -113,4 +140,64 @@ model Submission {
   createdAt DateTime @default(now())
 
   updatedAt DateTime @updatedAt
+}
+
+model Conversation {
+  id String @id @default(uuid())
+
+  projectId String
+
+  providerId String
+
+  masterId String
+
+  project Project @relation(fields: [projectId], references: [id])
+
+  provider User @relation("ProviderConversation", fields: [providerId], references: [id])
+
+  master User @relation("MasterConversation", fields: [masterId], references: [id])
+
+  messages Message[]
+
+  createdAt DateTime @default(now())
+
+  updatedAt DateTime @updatedAt
+}
+
+model Message {
+  id String @id @default(uuid())
+
+  conversationId String
+
+  senderId String
+
+  message String
+
+  isRead Boolean @default(false)
+
+  readAt DateTime?
+
+  conversation Conversation @relation(fields: [conversationId], references: [id])
+
+  sender User @relation(fields: [senderId], references: [id])
+
+  createdAt DateTime @default(now())
+}
+
+model Notification {
+  id String @id @default(uuid())
+
+  userId String
+
+  type NotificationType
+
+  title String
+
+  message String
+
+  isRead Boolean @default(false)
+
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 }

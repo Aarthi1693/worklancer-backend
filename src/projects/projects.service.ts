@@ -15,27 +15,26 @@ export class ProjectsService {
   }
 
   async update(id: string, updateProjectDto: UpdateProjectDto) {
-  return this.prisma.project.update({
-    where: {
-      id,
-    },
-    data: updateProjectDto,
-  });
-}
+    return this.prisma.project.update({
+      where: {
+        id,
+      },
+      data: updateProjectDto,
+    });
+  }
 
-async remove(id: string) {
-  return this.prisma.project.delete({
-    where: {
-      id,
-    },
-  });
-}
+  async remove(id: string) {
+    return this.prisma.project.delete({
+      where: {
+        id,
+      },
+    });
+  }
 
   findAll() {
     return this.prisma.project.findMany();
   }
 
-  
   async getProjectsByStatus(status: ProjectStatus) {
     return this.prisma.project.findMany({
       where: {
@@ -47,19 +46,19 @@ async remove(id: string) {
     });
   }
   getApplicants(projectId: string) {
-  return this.prisma.application.findMany({
-    where: {
-      projectId,
-    },
-    include: {
-      user: true,
-      project: true,
-    },
-    orderBy: {
-      matchScore: 'desc',
-    },
-  });
-}
+    return this.prisma.application.findMany({
+      where: {
+        projectId,
+      },
+      include: {
+        user: true,
+        project: true,
+      },
+      orderBy: {
+        matchScore: 'desc',
+      },
+    });
+  }
 
   async getTopCandidate(projectId: string) {
     const topApplication = await this.prisma.application.findFirst({

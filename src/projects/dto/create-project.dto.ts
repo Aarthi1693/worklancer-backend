@@ -1,8 +1,11 @@
-import { IsEnum, IsNumber, IsString } from 'class-validator';
+import { IsEnum, IsNumber, IsString, IsUUID } from 'class-validator';
 import { Type } from 'class-transformer';
 import { TaskType } from '@prisma/client';
 
 export class CreateProjectDto {
+  @IsUUID()
+  providerId: string;
+
   @IsString()
   title: string;
 

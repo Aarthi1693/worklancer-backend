@@ -8,15 +8,7 @@ import { PromptService } from './prompt/prompt.service';
 @Module({
   imports: [PrismaModule],
   controllers: [AiController],
-  providers: [
-    AiService,
-    GeminiService,
-    PromptService,
-  ],
-  exports: [
-    AiService,
-    GeminiService,
-    PromptService,
-  ],
+  providers: [AiService, GeminiService, PromptService],
+  exports: [AiService, GeminiService, PromptService],
 })
 export class AiModule {}

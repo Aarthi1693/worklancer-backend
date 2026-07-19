@@ -10,15 +10,14 @@ export class CareerAiService {
   ) {}
 
   async analyzeCareer(userId: string) {
-
     const user = await this.prisma.user.findUnique({
-  where: { id: userId },
-  include: {
-    applications: true,
-  },
-});
+      where: { id: userId },
+      include: {
+        applications: true,
+      },
+    });
     if (!user) {
-      throw new Error("User not found");
+      throw new Error('User not found');
     }
 
     const prompt = `
@@ -75,8 +74,7 @@ Return ONLY JSON.
 }
 `;
 
-    const response =
-      await this.geminiService.generate(prompt);
+    const response = await this.geminiService.generate(prompt);
 
     try {
       return JSON.parse(response);

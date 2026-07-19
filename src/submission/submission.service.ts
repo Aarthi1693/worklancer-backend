@@ -5,7 +5,7 @@ import { UpdateSubmissionDto } from './dto/update-submission.dto';
 
 @Injectable()
 export class SubmissionService {
-  constructor(private prisma: PrismaService) { }
+  constructor(private prisma: PrismaService) {}
 
   async create(createSubmissionDto: CreateSubmissionDto) {
     const application = await this.prisma.application.findUnique({
@@ -20,24 +20,24 @@ export class SubmissionService {
 
     return this.prisma.submission.create({
       data: {
-  applicationId: createSubmissionDto.applicationId,
+        applicationId: createSubmissionDto.applicationId,
 
-  githubLink: createSubmissionDto.githubLink,
+        githubLink: createSubmissionDto.githubLink,
 
-  deploymentLink: createSubmissionDto.deploymentLink,
+        deploymentLink: createSubmissionDto.deploymentLink,
 
-  reportFile: createSubmissionDto.reportFile,
+        reportFile: createSubmissionDto.reportFile,
 
-  imageUrls: createSubmissionDto.imageUrls,
+        imageUrls: createSubmissionDto.imageUrls,
 
-  location: createSubmissionDto.location,
+        location: createSubmissionDto.location,
 
-  completionDate: createSubmissionDto.completionDate
-    ? new Date(createSubmissionDto.completionDate)
-    : null,
+        completionDate: createSubmissionDto.completionDate
+          ? new Date(createSubmissionDto.completionDate)
+          : null,
 
-  description: createSubmissionDto.description,
-},
+        description: createSubmissionDto.description,
+      },
     });
   }
   async findAll() {
@@ -107,19 +107,18 @@ export class SubmissionService {
     });
   }
   async getAllSubmissions() {
-  return this.prisma.submission.findMany({
-    include: {
-      application: {
-        include: {
-          user: true,
-          project: true,
+    return this.prisma.submission.findMany({
+      include: {
+        application: {
+          include: {
+            user: true,
+            project: true,
+          },
         },
       },
-    },
-    orderBy: {
-      createdAt: "desc",
-    },
-  });
-}
-
+      orderBy: {
+        createdAt: 'desc',
+      },
+    });
+  }
 }

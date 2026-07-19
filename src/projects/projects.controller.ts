@@ -34,17 +34,14 @@ export class ProjectsController {
 
   // ✅ Update Project
   @Patch(':id')
-  update(
-    @Param('id') id: string,
-    @Body() updateProjectDto: UpdateProjectDto,
-  ) {
+  update(@Param('id') id: string, @Body() updateProjectDto: UpdateProjectDto) {
     return this.projectsService.update(id, updateProjectDto);
   }
 
   @Delete(':id')
-remove(@Param('id') id: string) {
-  return this.projectsService.remove(id);
-}
+  remove(@Param('id') id: string) {
+    return this.projectsService.remove(id);
+  }
 
   @Get('status/:status')
   getProjectsByStatus(@Param('status') status: ProjectStatus) {
@@ -62,10 +59,7 @@ remove(@Param('id') id: string) {
   }
 
   @Patch(':id/status')
-  updateStatus(
-    @Param('id') id: string,
-    @Body() body: UpdateProjectStatusDto,
-  ) {
+  updateStatus(@Param('id') id: string, @Body() body: UpdateProjectStatusDto) {
     return this.projectsService.updateStatus(id, body.status);
   }
 

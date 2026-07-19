@@ -1,4 +1,12 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+} from '@nestjs/common';
 import { SubmissionService } from './submission.service';
 import { CreateSubmissionDto } from './dto/create-submission.dto';
 import { UpdateSubmissionDto } from './dto/update-submission.dto';
@@ -18,26 +26,26 @@ export class SubmissionController {
   }
 
   // ✅ MUST COME BEFORE :id
-  @Get("provider")
+  @Get('provider')
   getProviderSubmissions() {
     return this.submissionService.getAllSubmissions();
   }
 
-  @Get(":id")
-  findOne(@Param("id") id: string) {
+  @Get(':id')
+  findOne(@Param('id') id: string) {
     return this.submissionService.findOne(id);
   }
 
-  @Patch(":id")
+  @Patch(':id')
   update(
-    @Param("id") id: string,
+    @Param('id') id: string,
     @Body() updateSubmissionDto: UpdateSubmissionDto,
   ) {
     return this.submissionService.update(id, updateSubmissionDto);
   }
 
-  @Delete(":id")
-  remove(@Param("id") id: string) {
+  @Delete(':id')
+  remove(@Param('id') id: string) {
     return this.submissionService.remove(id);
   }
 }

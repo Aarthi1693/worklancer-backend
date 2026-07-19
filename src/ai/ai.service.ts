@@ -13,11 +13,9 @@ export class AiService {
   // AI Project Planner
   // -----------------------------
   async generateProjectPlan(title: string): Promise<unknown> {
-    const prompt =
-      this.promptService.generateProjectPlanPrompt(title);
+    const prompt = this.promptService.generateProjectPlanPrompt(title);
 
-    const response =
-      await this.geminiService.generate(prompt);
+    const response = await this.geminiService.generate(prompt);
 
     try {
       return JSON.parse(response);
@@ -37,7 +35,6 @@ export class AiService {
     projectDescription: string,
     members: any[],
   ): Promise<unknown> {
-
     const prompt = `
 You are an AI Team Recommendation Engine.
 
@@ -79,8 +76,7 @@ Return ONLY valid JSON.
 }
 `;
 
-    const response =
-      await this.geminiService.generate(prompt);
+    const response = await this.geminiService.generate(prompt);
 
     try {
       return JSON.parse(response);
