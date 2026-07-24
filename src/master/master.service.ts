@@ -21,6 +21,19 @@ export class MasterService {
     });
 
     const applications = await this.prisma.application.findMany();
+    const currentTasks = await this.prisma.application.findMany({
+      where: {
+        status: 'ACCEPTED',
+      },
+      include: {
+        project: true,
+        user: true,
+        submission: true,
+      },
+      orderBy: {
+        createdAt: 'desc',
+      },
+    });
 
     const averageMatchScore =
       applications.length > 0
@@ -37,6 +50,7 @@ export class MasterService {
       pendingProjects,
       earnings,
       performance: Math.round(averageMatchScore),
+      currentTasks,
     };
   }
 

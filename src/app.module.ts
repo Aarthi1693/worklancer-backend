@@ -12,6 +12,9 @@ import { AiModule } from './ai/ai.module';
 import { SubmissionModule } from './submission/submission.module';
 import { CareerAiModule } from './career-ai/career-ai.module';
 import { ChatModule } from './chat/chat.module';
+import { NotificationsModule } from './notifications/notifications.module';
+import { PaymentsModule } from './payments/payments.module';
+import { KycModule } from './kyc/kyc.module';
 
 @Module({
   imports: [
@@ -34,6 +37,9 @@ import { ChatModule } from './chat/chat.module';
     SubmissionModule,
     CareerAiModule,
     ChatModule,
+    NotificationsModule,
+    PaymentsModule,
+    KycModule,
   ],
 })
 export class AppModule {}

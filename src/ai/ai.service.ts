@@ -1,12 +1,16 @@
 import { Injectable } from '@nestjs/common';
+import { Prisma } from '@prisma/client';
 import { GeminiService } from './gemini/gemini.service';
 import { PromptService } from './prompt/prompt.service';
+import { PrismaService } from '../prisma/prisma.service';
+import { SaveProjectPlanDto } from './dto/save-project-plan.dto';
 
 @Injectable()
 export class AiService {
   constructor(
     private readonly geminiService: GeminiService,
     private readonly promptService: PromptService,
+    private readonly prisma: PrismaService,
   ) {}
 
   // -----------------------------
@@ -25,6 +29,25 @@ export class AiService {
         rawResponse: response,
       };
     }
+  }
+
+  async saveProjectPlan(userId: string, body: SaveProjectPlanDto) {
+    return this.prisma.aIProjectPlan.create({
+      data: {
+        title: body.title,
+        description: body.description,
+        category: body.category,
+        projectType: body.projectType,
+        budget: body.budget ? Number(body.budget) : undefined,
+        deadline: body.deadline ? new Date(body.deadline) : undefined,
+        requiredSkills: body.requiredSkills,
+        teamSize: body.teamSize ? Number(body.teamSize) : undefined,
+        priority: body.priority,
+        planData: body.planData as Prisma.InputJsonValue,
+        projectId: body.projectId,
+        userId,
+      },
+    });
   }
 
   // -----------------------------

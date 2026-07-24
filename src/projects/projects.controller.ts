@@ -6,9 +6,13 @@ import {
   Post,
   Patch,
   Delete,
+  Req,
   UseGuards,
+  ForbiddenException,
+  UnauthorizedException,
 } from '@nestjs/common';
 import { ProjectStatus } from '@prisma/client';
+import type { Request } from 'express';
 
 import { ProjectsService } from './projects.service';
 import { CreateProjectDto } from './dto/create-project.dto';
@@ -21,9 +25,25 @@ import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 export class ProjectsController {
   constructor(private readonly projectsService: ProjectsService) {}
 
+  @UseGuards(JwtAuthGuard)
   @Post()
-  create(@Body() createProjectDto: CreateProjectDto) {
-    return this.projectsService.create(createProjectDto);
+  create(@Req() req: Request, @Body() createProjectDto: CreateProjectDto) {
+    const user = req.user as Record<string, unknown> | undefined;
+    const userId = typeof user?.id === 'string' ? user.id : undefined;
+    const userRole = typeof user?.role === 'string' ? user.role : undefined;
+
+    if (!userId) {
+      throw new UnauthorizedException('Authentication required');
+    }
+
+    if (userRole !== 'PROVIDER') {
+      throw new ForbiddenException('Only providers can create tasks');
+    }
+
+    return this.projectsService.create({
+      ...createProjectDto,
+      providerId: userId,
+    });
   }
 
   @UseGuards(JwtAuthGuard)

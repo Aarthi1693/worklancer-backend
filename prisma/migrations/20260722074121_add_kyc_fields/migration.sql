@@ -1,0 +1,16 @@
+-- AlterTable
+ALTER TABLE "User" ADD COLUMN     "kycAddress" TEXT,
+ADD COLUMN     "kycCity" TEXT,
+ADD COLUMN     "kycDob" TEXT,
+ADD COLUMN     "kycGender" TEXT,
+ADD COLUMN     "kycIdPhoto" TEXT,
+ADD COLUMN     "kycPanCard" TEXT,
+ADD COLUMN     "kycPhone" TEXT,
+ADD COLUMN     "kycPincode" TEXT,
+ADD COLUMN     "kycProfilePhoto" TEXT,
+ADD COLUMN     "kycScore" INTEGER,
+ADD COLUMN     "kycSelfie" TEXT,
+ADD COLUMN     "kycState" TEXT,
+ADD COLUMN     "kycStatus" TEXT DEFAULT 'NOT_STARTED',
+ADD COLUMN     "kycVerificationReport" JSONB,
+ADD COLUMN     "kycVerifiedAt" TIMESTAMP(3);

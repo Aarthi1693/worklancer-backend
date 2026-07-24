@@ -10,7 +10,10 @@ export class ProjectsService {
 
   create(createProjectDto: CreateProjectDto) {
     return this.prisma.project.create({
-      data: createProjectDto,
+      data: {
+        ...createProjectDto,
+        providerId: createProjectDto.providerId!,
+      },
     });
   }
 

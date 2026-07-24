@@ -1,0 +1,16 @@
+-- AlterTable
+ALTER TABLE "User" ADD COLUMN     "availability" TEXT,
+ADD COLUMN     "avatar" TEXT,
+ADD COLUMN     "bio" TEXT,
+ADD COLUMN     "businessAddress" TEXT,
+ADD COLUMN     "companyDescription" TEXT,
+ADD COLUMN     "companyName" TEXT,
+ADD COLUMN     "githubUrl" TEXT,
+ADD COLUMN     "hourlyRate" DOUBLE PRECISION,
+ADD COLUMN     "industry" TEXT,
+ADD COLUMN     "linkedinUrl" TEXT,
+ADD COLUMN     "location" TEXT,
+ADD COLUMN     "phone" TEXT,
+ADD COLUMN     "portfolioLink" TEXT,
+ADD COLUMN     "providerType" TEXT,
+ADD COLUMN     "website" TEXT;
