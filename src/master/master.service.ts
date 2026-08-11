@@ -79,20 +79,33 @@ export class MasterService {
   }
 
   async getMyTasks() {
-    return this.prisma.application.findMany({
-      where: {
-        status: 'ACCEPTED',
+  return this.prisma.application.findMany({
+    where: {
+      status: "ACCEPTED",
+    },
+    include: {
+      user: true,
+
+      submission: true,
+
+      project: {
+        include: {
+          provider: {
+            select: {
+              id: true,
+              name: true,
+              email: true,
+            },
+          },
+        },
       },
-      include: {
-        project: true,
-        user: true,
-        submission: true,
-      },
-      orderBy: {
-        createdAt: 'desc',
-      },
-    });
-  }
+    },
+
+    orderBy: {
+      createdAt: "desc",
+    },
+  });
+}
   async getAnalytics() {
     const acceptedTasks = await this.prisma.application.count({
       where: {

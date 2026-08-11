@@ -1,10 +1,4 @@
-import {
-  Body,
-  Controller,
-  Post,
-  Req,
-  UseGuards,
-} from '@nestjs/common';
+import { Body, Controller, Post, Req, UseGuards } from '@nestjs/common';
 import { ThrottlerGuard } from '@nestjs/throttler';
 import type { Request } from 'express';
 import { AuthService } from './auth.service';
@@ -28,10 +22,7 @@ export class AuthController {
 
   @Post('forgot-password')
   @UseGuards(ThrottlerGuard)
-  async forgotPassword(
-    @Body() body: ForgotPasswordDto,
-    @Req() req: Request,
-  ) {
+  async forgotPassword(@Body() body: ForgotPasswordDto, @Req() req: Request) {
     return this.authService.forgotPassword(body.email);
   }
 

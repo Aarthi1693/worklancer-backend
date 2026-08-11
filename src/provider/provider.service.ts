@@ -32,7 +32,8 @@ export class ProviderService {
       },
     });
 
-    const totalApplications = await this.prisma.application.count();
+    const totalApplications =
+      await this.prisma.application.count();
 
     return {
       totalProjects,
@@ -50,5 +51,54 @@ export class ProviderService {
         createdAt: 'desc',
       },
     });
+  }
+
+  async getAssignedMasters(providerId: string) {
+    const applications =
+      await this.prisma.application.findMany({
+        where: {
+          status: 'ACCEPTED',
+          project: {
+            providerId,
+          },
+        },
+        include: {
+          user: true,
+          project: true,
+        },
+        orderBy: {
+          createdAt: 'desc',
+        },
+      });
+
+    return applications.map((app) => ({
+      id: app.id,
+
+      masterId: app.user.id,
+      name: app.user.name,
+      email: app.user.email,
+
+      role: 'Master',
+
+      rating: app.user.rating,
+
+      experience: app.user.experience,
+
+      skills: app.user.skills
+        ? app.user.skills
+            .split(',')
+            .map((s) => s.trim())
+        : [],
+
+      projectId: app.project.id,
+
+      project: app.project.title,
+
+      status: app.project.status,
+
+      avatar: `https://ui-avatars.com/api/?name=${encodeURIComponent(
+        app.user.name,
+      )}&background=2563eb&color=ffffff`,
+    }));
   }
 }

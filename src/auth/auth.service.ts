@@ -86,9 +86,7 @@ export class AuthService {
     const token = randomBytes(32).toString('hex');
     const hashedToken = await bcrypt.hash(token, 10);
 
-    const expiry = new Date(
-      Date.now() + RESET_TOKEN_TTL_MINUTES * 60 * 1000,
-    );
+    const expiry = new Date(Date.now() + RESET_TOKEN_TTL_MINUTES * 60 * 1000);
 
     await this.prisma.user.update({
       where: { email },

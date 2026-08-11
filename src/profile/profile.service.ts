@@ -181,22 +181,32 @@ export class ProfileService {
       throw new NotFoundException('User not found');
     }
 
-    const [projectsPosted, activeProjects, completedProjects, totalBudget, totalPayments] =
-      await Promise.all([
-        this.prisma.project.count({ where: { providerId: userId } }),
-        this.prisma.project.count({
-          where: { providerId: userId, status: { in: ['OPEN', 'IN_PROGRESS', 'REVIEW'] } },
-        }),
-        this.prisma.project.count({ where: { providerId: userId, status: 'COMPLETED' } }),
-        this.prisma.project.aggregate({
-          where: { providerId: userId },
-          _sum: { budget: true },
-        }),
-        this.prisma.payment.aggregate({
-          where: { providerId: userId, status: 'RELEASED' },
-          _sum: { amount: true },
-        }),
-      ]);
+    const [
+      projectsPosted,
+      activeProjects,
+      completedProjects,
+      totalBudget,
+      totalPayments,
+    ] = await Promise.all([
+      this.prisma.project.count({ where: { providerId: userId } }),
+      this.prisma.project.count({
+        where: {
+          providerId: userId,
+          status: { in: ['OPEN', 'IN_PROGRESS', 'REVIEW'] },
+        },
+      }),
+      this.prisma.project.count({
+        where: { providerId: userId, status: 'COMPLETED' },
+      }),
+      this.prisma.project.aggregate({
+        where: { providerId: userId },
+        _sum: { budget: true },
+      }),
+      this.prisma.payment.aggregate({
+        where: { providerId: userId, status: 'RELEASED' },
+        _sum: { amount: true },
+      }),
+    ]);
 
     return {
       projectsPosted,
@@ -211,9 +221,10 @@ export class ProfileService {
   async getMasterStats(userId: string): Promise<MasterStats> {
     const user = await this.prisma.user.findUnique({
       where: { id: userId },
-      select: { rating: true, kycScore: true },
+      include: {
+        kyc: true,
+      },
     });
-
     if (!user) {
       throw new NotFoundException('User not found');
     }
@@ -227,12 +238,17 @@ export class ProfileService {
       (app) => app.status === 'PENDING' || app.status === 'ACCEPTED',
     ).length;
 
-    const acceptedTasks = applications.filter((app) => app.status === 'ACCEPTED').length;
+    const acceptedTasks = applications.filter(
+      (app) => app.status === 'ACCEPTED',
+    ).length;
     const completedProjects = applications.filter(
       (app) => app.submission?.status === 'APPROVED',
     ).length;
 
-    const successRate = acceptedTasks === 0 ? 0 : Math.round((completedProjects / acceptedTasks) * 100);
+    const successRate =
+      acceptedTasks === 0
+        ? 0
+        : Math.round((completedProjects / acceptedTasks) * 100);
 
     const totalEarnings = applications
       .filter((app) => app.submission?.status === 'APPROVED')
@@ -243,7 +259,7 @@ export class ProfileService {
       activeProjects,
       successRate,
       totalEarnings,
-      aiCareerScore: user.kycScore ?? null,
+      aiCareerScore: user.kyc?.riskScore ?? null,
       overallRating: user.rating || 0,
     };
   }

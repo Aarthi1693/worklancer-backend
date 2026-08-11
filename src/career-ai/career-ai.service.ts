@@ -1,12 +1,12 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
-import { GeminiService } from '../ai/gemini/gemini.service';
+import { LLMService } from '../ai/llm/llm.service';
 
 @Injectable()
 export class CareerAiService {
   constructor(
     private prisma: PrismaService,
-    private geminiService: GeminiService,
+    private llmService: LLMService,
   ) {}
 
   async analyzeCareer(userId: string) {
@@ -74,7 +74,7 @@ Return ONLY JSON.
 }
 `;
 
-    const response = await this.geminiService.generate(prompt);
+    const response = await this.llmService.generate(prompt);
 
     try {
       return JSON.parse(response);

@@ -1,15 +1,15 @@
 import { Module } from '@nestjs/common';
-import { KycController } from './kyc.controller';
-import { KycService } from './kyc.service';
+import { KycController } from './controllers/kyc.controller';
+import { KycService } from './services/kyc.service';
 import { PrismaModule } from '../prisma/prisma.module';
+import { OcrModule } from '../ocr/ocr.module';
 import { AiModule } from '../ai/ai.module';
-import { AuthModule } from '../auth/auth.module';
-import { MasterGuard } from './guards/master.guard';
+import { FaceService } from './services/face.service';
+import { NotificationsModule } from '../notifications/notifications.module';
 
 @Module({
-  imports: [PrismaModule, AiModule, AuthModule],
+  imports: [PrismaModule, OcrModule, AiModule, NotificationsModule],
   controllers: [KycController],
-  providers: [KycService, MasterGuard],
-  exports: [KycService],
+  providers: [KycService, FaceService],
 })
 export class KycModule {}

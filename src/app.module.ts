@@ -1,3 +1,4 @@
+import { ConfigModule } from '@nestjs/config';
 import { Module } from '@nestjs/common';
 import { ThrottlerModule } from '@nestjs/throttler';
 import { PrismaModule } from './prisma/prisma.module';
@@ -15,9 +16,17 @@ import { ChatModule } from './chat/chat.module';
 import { NotificationsModule } from './notifications/notifications.module';
 import { PaymentsModule } from './payments/payments.module';
 import { KycModule } from './kyc/kyc.module';
+import { OcrModule } from './ocr/ocr.module';
+import { AdminModule } from './admin/admin.module';
 
 @Module({
   imports: [
+    ConfigModule.forRoot({
+      isGlobal: true,
+      envFilePath: '.env',
+      ignoreEnvFile: false,
+    }),
+
     ThrottlerModule.forRoot([
       {
         name: 'default',
@@ -25,6 +34,7 @@ import { KycModule } from './kyc/kyc.module';
         limit: 20,
       },
     ]),
+
     PrismaModule,
     UsersModule,
     AuthModule,
@@ -40,6 +50,8 @@ import { KycModule } from './kyc/kyc.module';
     NotificationsModule,
     PaymentsModule,
     KycModule,
+    OcrModule,
+    AdminModule,
   ],
 })
 export class AppModule {}

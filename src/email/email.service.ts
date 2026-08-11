@@ -18,12 +18,8 @@ export class EmailService {
         : undefined,
   });
 
-  async sendPasswordResetEmail(
-    to: string,
-    resetToken: string,
-  ): Promise<void> {
-    const frontendUrl =
-      process.env.FRONTEND_URL || 'http://localhost:3000';
+  async sendPasswordResetEmail(to: string, resetToken: string): Promise<void> {
+    const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:3000';
 
     const resetLink = `${frontendUrl}/reset-password?token=${resetToken}`;
 
@@ -31,7 +27,8 @@ export class EmailService {
 
     const html = this.buildResetEmailHtml(resetLink);
 
-    const from = process.env.SMTP_FROM || 'WorkLancer AI <no-reply@worklancer.ai>';
+    const from =
+      process.env.SMTP_FROM || 'WorkLancer AI <no-reply@worklancer.ai>';
 
     try {
       await this.transporter.sendMail({

@@ -7,6 +7,7 @@ import {
   WebSocketGateway,
   WebSocketServer,
 } from '@nestjs/websockets';
+import { Inject, forwardRef } from '@nestjs/common';
 
 import { Server, Socket } from 'socket.io';
 import { JwtService } from '@nestjs/jwt';
@@ -40,8 +41,11 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
   private readonly userSockets = new Map<string, Set<string>>();
 
+  private readonly activeConversations = new Map<string, Set<string>>();
+
   constructor(
-    private readonly chatService: ChatService,
+    @Inject(forwardRef(() => ChatService))
+private readonly chatService: ChatService,
     private readonly jwtService: JwtService,
     private readonly notifications: NotificationService,
   ) {}
@@ -121,11 +125,23 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     return Array.from(this.userSockets.keys());
   }
 
+  isUserInConversation(userId: string, conversationId: string): boolean {
+    const conversations = this.activeConversations.get(userId);
+    return conversations?.has(conversationId) ?? false;
+  }
+
   @SubscribeMessage('joinConversation')
   handleJoinConversation(
     @ConnectedSocket() client: Socket,
     @MessageBody() data: { conversationId: string },
   ) {
+    const user = client.data.user as SocketUser | undefined;
+    if (user) {
+      const conversations =
+        this.activeConversations.get(user.id) ?? new Set<string>();
+      conversations.add(data.conversationId);
+      this.activeConversations.set(user.id, conversations);
+    }
     client.join(conversationRoom(data.conversationId));
   }
 
@@ -134,6 +150,16 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     @ConnectedSocket() client: Socket,
     @MessageBody() data: { conversationId: string },
   ) {
+    const user = client.data.user as SocketUser | undefined;
+    if (user) {
+      const conversations = this.activeConversations.get(user.id);
+      if (conversations) {
+        conversations.delete(data.conversationId);
+        if (conversations.size === 0) {
+          this.activeConversations.delete(user.id);
+        }
+      }
+    }
     client.leave(conversationRoom(data.conversationId));
   }
 

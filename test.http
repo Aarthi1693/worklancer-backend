@@ -1,0 +1,3 @@
+### Check KYC Status
+
+GET http://localhost:5000/kyc/status/06aaebe9-1072-46f5-86a3-35fbee5ddaef

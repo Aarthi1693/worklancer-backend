@@ -13,15 +13,11 @@ export class ApplicationsService {
 
   async create(createApplicationDto: CreateApplicationDto) {
     try {
-      console.log('Incoming DTO:', createApplicationDto);
-
       const user = (await this.prisma.user.findUnique({
         where: {
           id: createApplicationDto.userId,
         },
       })) as { name: string; skills: string | null } | null;
-
-      console.log('User:', user);
 
       const project = (await this.prisma.project.findUnique({
         where: {
@@ -32,8 +28,6 @@ export class ApplicationsService {
         title: string;
         requiredSkills: string;
       } | null;
-
-      console.log('Project:', project);
 
       if (!user || !project) {
         throw new Error('User or Project not found');
@@ -74,7 +68,6 @@ export class ApplicationsService {
 
       return application;
     } catch (error) {
-      console.log(error);
       throw error;
     }
   }

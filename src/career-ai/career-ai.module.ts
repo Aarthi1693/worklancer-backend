@@ -7,7 +7,7 @@ import { AiModule } from '../ai/ai.module';
 
 @Module({
   imports: [PrismaModule, AiModule],
-  controllers: [CareerAiController],
   providers: [CareerAiService],
+  controllers: [CareerAiController],
 })
 export class CareerAiModule {}

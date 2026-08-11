@@ -18,22 +18,44 @@ export class PaymentsService {
     });
   }
 
-  create(data: {
+  async create(data: {
     submissionId: string;
     projectId: string;
     providerId: string;
     userId: string;
     amount: number;
   }) {
-    return this.prisma.payment.create({
+    const payment = await this.prisma.payment.create({
       data: {
         submissionId: data.submissionId,
         projectId: data.projectId,
         providerId: data.providerId,
         userId: data.userId,
         amount: data.amount,
+        status: PaymentStatus.HELD,
       },
     });
+
+    const project = await this.prisma.project.findUnique({
+      where: { id: data.projectId },
+      select: { title: true },
+    });
+
+    await this.notificationService.notify({
+      userId: data.providerId,
+      type: NotificationType.PAYMENT,
+      title: 'Payment Created',
+      message: `Payment has been created and placed in escrow for "${project?.title || 'Unknown'}".`,
+    });
+
+    await this.notificationService.notify({
+      userId: data.userId,
+      type: NotificationType.PAYMENT,
+      title: 'Payment Created',
+      message: `Payment has been created and placed in escrow for "${project?.title || 'Unknown'}".`,
+    });
+
+    return payment;
   }
 
   async findByProvider(providerId: string) {
@@ -165,7 +187,7 @@ export class PaymentsService {
       await this.notificationService.notify({
         userId: payment.providerId,
         type: NotificationType.PAYMENT,
-        title: 'Payment Released',
+        title: 'Payment Successfully Released',
         message: `Payment of ₹${payment.amount} has been released for project "${project?.title || 'Unknown'}".`,
         data: { paymentId: payment.id, projectId: payment.projectId },
       });

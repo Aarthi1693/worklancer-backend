@@ -29,6 +29,7 @@ export class ProjectsController {
   @Post()
   create(@Req() req: Request, @Body() createProjectDto: CreateProjectDto) {
     const user = req.user as Record<string, unknown> | undefined;
+
     const userId = typeof user?.id === 'string' ? user.id : undefined;
     const userRole = typeof user?.role === 'string' ? user.role : undefined;
 
@@ -50,6 +51,11 @@ export class ProjectsController {
   @Get()
   findAll() {
     return this.projectsService.findAll();
+  }
+
+  @Get(':id')
+  async getProjectById(@Param('id') id: string) {
+    return this.projectsService.getProjectById(id);
   }
 
   // ✅ Update Project

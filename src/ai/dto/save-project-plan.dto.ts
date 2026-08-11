@@ -41,4 +41,8 @@ export class SaveProjectPlanDto {
   @IsOptional()
   @IsString()
   projectId?: string;
+
+  @IsOptional()
+  @IsString()
+  userId?: string;
 }

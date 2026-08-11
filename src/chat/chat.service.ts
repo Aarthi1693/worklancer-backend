@@ -1,13 +1,18 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Inject, forwardRef } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { NotificationService } from '../notifications/notifications.service';
 import { NotificationType } from '@prisma/client';
+import { ChatGateway } from './chat.gateway';
 
 @Injectable()
 export class ChatService {
   constructor(
-    private prisma: PrismaService,
-    private notifications: NotificationService,
+    private readonly prisma: PrismaService,
+
+    private readonly notifications: NotificationService,
+
+    @Inject(forwardRef(() => ChatGateway))
+    private readonly chatGateway: ChatGateway,
   ) {}
 
   async createConversation(
@@ -110,12 +115,19 @@ export class ChatService {
           ? conversation.masterId
           : conversation.providerId;
 
-      await this.notifications.notify({
-        userId: recipientId,
-        type: NotificationType.CHAT,
-        title: 'New Message',
-        message: message,
-      });
+      const isViewing = this.chatGateway.isUserInConversation(
+        recipientId,
+        conversationId,
+      );
+
+      if (!isViewing) {
+        await this.notifications.notify({
+          userId: recipientId,
+          type: NotificationType.CHAT,
+          title: 'New Message',
+          message: message,
+        });
+      }
     }
 
     return saved;

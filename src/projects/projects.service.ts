@@ -1,41 +1,137 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
+import { NotificationService } from '../notifications/notifications.service';
+
 import { CreateProjectDto } from './dto/create-project.dto';
-import { ProjectStatus } from '@prisma/client';
 import { UpdateProjectDto } from './dto/update-project.dto';
+
+import { ProjectStatus, NotificationType } from '@prisma/client';
 
 @Injectable()
 export class ProjectsService {
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private prisma: PrismaService,
+    private notificationService: NotificationService,
+  ) {}
 
-  create(createProjectDto: CreateProjectDto) {
-    return this.prisma.project.create({
+  async create(createProjectDto: CreateProjectDto) {
+    const project = await this.prisma.project.create({
       data: {
         ...createProjectDto,
         providerId: createProjectDto.providerId!,
       },
     });
+
+    // -----------------------------
+    // CREATE NOTIFICATION
+    // -----------------------------
+    const masters = await this.prisma.user.findMany({
+      where: {
+        role: 'MASTER',
+      },
+      select: {
+        id: true,
+      },
+    });
+
+    for (const master of masters) {
+      await this.notificationService.notify({
+        userId: master.id,
+        type: NotificationType.PROJECT,
+        title: 'New Task Available',
+        message: `"${project.title}" has been posted by a provider.`,
+      });
+    }
+
+    return project;
   }
 
   async update(id: string, updateProjectDto: UpdateProjectDto) {
-    return this.prisma.project.update({
+    const project = await this.prisma.project.update({
       where: {
         id,
       },
       data: updateProjectDto,
     });
+
+    const applications = await this.prisma.application.findMany({
+      where: {
+        projectId: id,
+      },
+      select: {
+        userId: true,
+      },
+    });
+
+    for (const app of applications) {
+      await this.notificationService.notify({
+        userId: app.userId,
+        type: NotificationType.PROJECT,
+        title: 'Project Updated',
+        message: `Project "${project.title}" has been updated.`,
+      });
+    }
+
+    return project;
   }
 
   async remove(id: string) {
-    return this.prisma.project.delete({
+    const project = await this.prisma.project.findUnique({
+      where: {
+        id,
+      },
+      select: {
+        title: true,
+      },
+    });
+
+    const applications = await this.prisma.application.findMany({
+      where: {
+        projectId: id,
+      },
+      select: {
+        userId: true,
+      },
+    });
+
+    const deletedProject = await this.prisma.project.delete({
       where: {
         id,
       },
     });
+
+    for (const app of applications) {
+      await this.notificationService.notify({
+        userId: app.userId,
+        type: NotificationType.PROJECT,
+        title: 'Project Removed',
+        message: `Project "${project?.title || 'Unknown'}" has been removed by the provider.`,
+      });
+    }
+
+    return deletedProject;
   }
 
   findAll() {
     return this.prisma.project.findMany();
+  }
+
+  async getProjectById(id: string) {
+    const project = await this.prisma.project.findUnique({
+      where: {
+        id,
+      },
+      include: {
+        provider: true,
+        applications: true,
+      },
+    });
+
+    if (!project) {
+      throw new NotFoundException('Project not found');
+    }
+
+    return project;
   }
 
   async getProjectsByStatus(status: ProjectStatus) {
@@ -48,6 +144,7 @@ export class ProjectsService {
       },
     });
   }
+
   getApplicants(projectId: string) {
     return this.prisma.application.findMany({
       where: {

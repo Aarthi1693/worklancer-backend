@@ -8,7 +8,6 @@ datasource db {
 }
 
 enum Role {
-  ADMIN
   PROVIDER
   MASTER
 }
@@ -38,6 +37,7 @@ enum NotificationType {
   CHAT
   PAYMENT
   PROJECT
+  SUBMISSION
   SYSTEM
 }
 
@@ -46,6 +46,14 @@ enum PaymentStatus {
   HELD
   RELEASED
   FAILED
+}
+
+enum KycStatus {
+  NOT_STARTED
+  PENDING
+  VERIFIED
+  REJECTED
+  RESUBMIT
 }
 
 model User {
@@ -63,44 +71,29 @@ model User {
   resetToken       String?
   resetTokenExpiry DateTime?
 
-  // KYC
-  kycStatus             String?   @default("NOT_STARTED")
-  kycVerifiedAt         DateTime?
-  kycScore              Int?
-  kycIdPhoto            String?
-  kycPanCard            String?
-  kycSelfie             String?
-  kycProfilePhoto       String?
-  kycVerificationReport Json?
-  kycDob                String?
-  kycGender             String?
-  kycAddress            String?
-  kycCity               String?
-  kycState              String?
-  kycPincode            String?
-  kycPhone              String?
+  kyc KYC?
 
-  phone String?
-  bio String?
-  location String?
-  companyName String?
-  providerType String?
-  industry String?
-  website String?
-  businessAddress String?
-  companyDescription String?
-  contactPerson String?
-  companySize String?
-  portfolioLink String?
-  linkedinUrl String?
-  githubUrl String?
-  hourlyRate Float?
-  availability String?
-  avatar String?
-  resume String?
-  gstNumber String?
+  phone                     String?
+  bio                       String?
+  location                  String?
+  companyName               String?
+  providerType              String?
+  industry                  String?
+  website                   String?
+  businessAddress           String?
+  companyDescription        String?
+  contactPerson             String?
+  companySize               String?
+  portfolioLink             String?
+  linkedinUrl               String?
+  githubUrl                 String?
+  hourlyRate                Float?
+  availability              String?
+  avatar                    String?
+  resume                    String?
+  gstNumber                 String?
   companyRegistrationNumber String?
-  preferredRole String?
+  preferredRole             String?
 
   applications Application[]
 
@@ -126,12 +119,14 @@ model User {
 model Project {
   id String @id @default(uuid())
 
-  title       String
+  title String
   description String
 
   budget Float
 
   requiredSkills String
+
+  dueDate DateTime?      // <-- ADD THIS
 
   taskType TaskType @default(DIGITAL)
 
@@ -139,7 +134,7 @@ model Project {
 
   providerId String
 
-  provider User @relation("ProviderProjects", fields: [providerId], references: [id], onDelete: Cascade)
+ provider User @relation("ProviderProjects", fields: [providerId], references: [id], onDelete: Cascade)
 
   applications Application[]
 
@@ -163,8 +158,7 @@ model Application {
 
   status String @default("PENDING")
 
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
-
+user User @relation(fields: [userId], references: [id], onDelete: Cascade)
   project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
 
   submission Submission?
@@ -259,38 +253,39 @@ enum PlanStatus {
 }
 
 model AIProjectPlan {
-  id              String   @id @default(uuid())
-  title           String
-  description     String
-  category        String?
-  projectType     String?
-  budget          Float?
-  deadline        DateTime?
-  requiredSkills  String?
-  teamSize        Int?
-  priority        String?
-  status          PlanStatus @default(ACTIVE)
-  planData        Json
-  userId          String
-  user            User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  projectId       String?
-  project         Project?  @relation(fields: [projectId], references: [id], onDelete: SetNull)
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
+  id             String     @id @default(uuid())
+  title          String
+  description    String
+  category       String?
+  projectType    String?
+  budget         Float?
+  deadline       DateTime?
+  requiredSkills String?
+  teamSize       Int?
+  priority       String?
+  status         PlanStatus @default(ACTIVE)
+  planData       Json
+  userId         String
+  user           User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  projectId      String?
+  project        Project?   @relation(fields: [projectId], references: [id], onDelete: SetNull)
+  createdAt      DateTime   @default(now())
+  updatedAt      DateTime   @updatedAt
 }
 
+
 model Notification {
-  id String @id @default(uuid())
+  id        String @id @default(uuid())
 
-  userId String
+  userId    String
 
-  type NotificationType
+  type      NotificationType
 
-  title String
+  title     String
 
-  message String
+  message   String
 
-  isRead Boolean @default(false)
+  isRead    Boolean @default(false)
 
   createdAt DateTime @default(now())
 
@@ -298,19 +293,64 @@ model Notification {
 }
 
 model Payment {
-  id           String    @id @default(uuid())
-  submissionId String    @unique
+  id           String        @id @default(uuid())
+  submissionId String        @unique
   projectId    String
   providerId   String
   userId       String
   amount       Float
   status       PaymentStatus @default(PENDING)
   releasedAt   DateTime?
-  createdAt    DateTime  @default(now())
-  updatedAt    DateTime  @updatedAt
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
 
   submission Submission @relation(fields: [submissionId], references: [id])
   project    Project    @relation(fields: [projectId], references: [id])
   provider   User       @relation("ProviderPayments", fields: [providerId], references: [id], onDelete: Cascade)
   user       User       @relation("MasterPayments", fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model KYC {
+  id String @id @default(uuid())
+
+  userId String @unique
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  // Personal Details
+  fullName String
+  dob      DateTime
+  gender   String
+
+  phone   String
+  address String
+  city    String
+  state   String
+  pincode String
+
+  // Uploaded Files
+  aadhaarImage String?
+  panImage     String?
+  selfieImage  String?
+
+  // OCR Results
+  aadhaarNumber String?
+  panNumber     String?
+  ocrData       Json?
+  ocrConfidence Float?
+
+  // Face Verification
+  faceSimilarity Float?
+  faceMatched    Boolean @default(false)
+
+  // AI
+  riskScore            Int?
+  verificationAttempts Int     @default(0)
+  aiSummary            String?
+
+  status KycStatus @default(NOT_STARTED)
+
+  verifiedAt DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }

@@ -2,12 +2,12 @@
 -- PostgreSQL database dump
 --
 
-\restrict kc0qJyKQLqqjLGQNdVyM034WmrvTmYijUrcolDO6pPV51DuIKHsfax0h48jsGp3
+\restrict eqbYAok6INiel7H8PMYx6q2hrrOnVCarQWQcuG0xre5tqkClaBTjbNVZjo0uAIn
 
 -- Dumped from database version 16.11
 -- Dumped by pg_dump version 16.11
 
--- Started on 2026-07-24 13:24:27
+-- Started on 2026-07-24 22:55:40
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -35,6 +35,21 @@ CREATE TYPE public."NotificationType" AS ENUM (
 
 
 ALTER TYPE public."NotificationType" OWNER TO postgres;
+
+--
+-- TOC entry 897 (class 1247 OID 35729)
+-- Name: PaymentStatus; Type: TYPE; Schema: public; Owner: postgres
+--
+
+CREATE TYPE public."PaymentStatus" AS ENUM (
+    'PENDING',
+    'HELD',
+    'RELEASED',
+    'FAILED'
+);
+
+
+ALTER TYPE public."PaymentStatus" OWNER TO postgres;
 
 --
 -- TOC entry 891 (class 1247 OID 27750)
@@ -221,10 +236,10 @@ CREATE TABLE public."Payment" (
     "providerId" text NOT NULL,
     "userId" text NOT NULL,
     amount double precision NOT NULL,
-    status text DEFAULT 'PENDING'::text NOT NULL,
     "releasedAt" timestamp(3) without time zone,
     "createdAt" timestamp(3) without time zone DEFAULT CURRENT_TIMESTAMP NOT NULL,
-    "updatedAt" timestamp(3) without time zone NOT NULL
+    "updatedAt" timestamp(3) without time zone NOT NULL,
+    status public."PaymentStatus" DEFAULT 'PENDING'::public."PaymentStatus" NOT NULL
 );
 
 
@@ -310,7 +325,28 @@ CREATE TABLE public."User" (
     "kycState" text,
     "kycStatus" text DEFAULT 'NOT_STARTED'::text,
     "kycVerificationReport" jsonb,
-    "kycVerifiedAt" timestamp(3) without time zone
+    "kycVerifiedAt" timestamp(3) without time zone,
+    availability text,
+    avatar text,
+    bio text,
+    "businessAddress" text,
+    "companyDescription" text,
+    "companyName" text,
+    "githubUrl" text,
+    "hourlyRate" double precision,
+    industry text,
+    "linkedinUrl" text,
+    location text,
+    phone text,
+    "portfolioLink" text,
+    "providerType" text,
+    website text,
+    "companySize" text,
+    "contactPerson" text,
+    "companyRegistrationNumber" text,
+    "gstNumber" text,
+    "preferredRole" text,
+    resume text
 );
 
 
@@ -336,7 +372,7 @@ CREATE TABLE public._prisma_migrations (
 ALTER TABLE public._prisma_migrations OWNER TO postgres;
 
 --
--- TOC entry 4996 (class 0 OID 27730)
+-- TOC entry 5003 (class 0 OID 27730)
 -- Dependencies: 223
 -- Data for Name: AIProjectPlan; Type: TABLE DATA; Schema: public; Owner: postgres
 --
@@ -348,7 +384,7 @@ fb6e5ba8-5709-4f87-94c7-4f66235ac034	Ai chat bot	chat assistant	Mobile App	Digit
 
 
 --
--- TOC entry 4991 (class 0 OID 16564)
+-- TOC entry 4998 (class 0 OID 16564)
 -- Dependencies: 218
 -- Data for Name: Application; Type: TABLE DATA; Schema: public; Owner: postgres
 --
@@ -387,11 +423,14 @@ be7061e7-57bb-4581-8a56-7fd88e4379ba	31abdf53-0840-4703-918c-a8cb6b81d84c	d80283
 8228850b-9562-4dd1-95f6-f7bab24ca206	31abdf53-0840-4703-918c-a8cb6b81d84c	9082bf2f-91e1-450b-94a2-fbd7d26103ff	0	ACCEPTED	2026-07-14 14:43:31.829
 7875f0a3-8fca-4377-8fff-f9666734f522	f0f160cd-65de-4f88-b85a-77729bbd91bc	75d898c2-c888-4564-98e7-f6907d25a38a	0	ACCEPTED	2026-07-23 08:30:43.279
 47173cdb-227c-45c8-b1ba-b928ba134ad6	31abdf53-0840-4703-918c-a8cb6b81d84c	75d898c2-c888-4564-98e7-f6907d25a38a	0	ACCEPTED	2026-07-23 09:58:10.056
+398c791d-6603-4760-ab44-f5bfde2d2337	31abdf53-0840-4703-918c-a8cb6b81d84c	55380c51-1151-45b2-848d-71d9db2ebfc7	0	ACCEPTED	2026-07-24 14:30:28.725
+382b8f22-cb27-4dab-91be-dcb7aae4648b	31abdf53-0840-4703-918c-a8cb6b81d84c	55380c51-1151-45b2-848d-71d9db2ebfc7	0	ACCEPTED	2026-07-24 14:31:34.532
+7ac331fa-137c-498b-bd3c-74b85feb6daf	31abdf53-0840-4703-918c-a8cb6b81d84c	55380c51-1151-45b2-848d-71d9db2ebfc7	0	PENDING	2026-07-24 15:51:49.197
 \.
 
 
 --
--- TOC entry 4993 (class 0 OID 25252)
+-- TOC entry 5000 (class 0 OID 25252)
 -- Dependencies: 220
 -- Data for Name: Conversation; Type: TABLE DATA; Schema: public; Owner: postgres
 --
@@ -408,11 +447,12 @@ e2a586a5-7e24-4ffb-a81f-722d0bc24da8	ffc9fa2c-d8c5-444c-9fa2-911462a915ba	09bbb5
 ce330c1c-8f00-4c83-b332-11afb7d73b87	cceef37a-0ff0-4e03-8150-7ac73cbf55d6	09bbb5ff-b01d-4893-933e-70b610681365	31abdf53-0840-4703-918c-a8cb6b81d84c	2026-07-22 16:33:01.398	2026-07-22 16:33:01.398
 4efd0946-2048-4680-a15e-6e677a2a37b9	9082bf2f-91e1-450b-94a2-fbd7d26103ff	09bbb5ff-b01d-4893-933e-70b610681365	31abdf53-0840-4703-918c-a8cb6b81d84c	2026-07-23 08:31:53.72	2026-07-23 08:31:53.72
 ca5c9a45-28ae-4098-9d24-719b9b95d8d8	75d898c2-c888-4564-98e7-f6907d25a38a	09bbb5ff-b01d-4893-933e-70b610681365	f0f160cd-65de-4f88-b85a-77729bbd91bc	2026-07-23 09:59:09.812	2026-07-23 09:59:09.812
+9a28f3a8-faa8-4850-9445-6045c6b60576	55380c51-1151-45b2-848d-71d9db2ebfc7	31abdf53-0840-4703-918c-a8cb6b81d84c	31abdf53-0840-4703-918c-a8cb6b81d84c	2026-07-24 14:32:02.929	2026-07-24 14:32:02.929
 \.
 
 
 --
--- TOC entry 4994 (class 0 OID 25260)
+-- TOC entry 5001 (class 0 OID 25260)
 -- Dependencies: 221
 -- Data for Name: Message; Type: TABLE DATA; Schema: public; Owner: postgres
 --
@@ -442,11 +482,13 @@ e31cf4d0-ace8-459e-8d2a-10902f4466c5	54f365c2-99b9-44d5-a4e2-acd7cfce7612	31abdf
 467c0bf6-ef7d-458b-bd63-5664ab8480af	ce330c1c-8f00-4c83-b332-11afb7d73b87	31abdf53-0840-4703-918c-a8cb6b81d84c	i will generate it	f	2026-07-22 16:33:49.978	\N
 68ec61c3-6177-4d89-9ef9-3968f0b3b5d3	4efd0946-2048-4680-a15e-6e677a2a37b9	09bbb5ff-b01d-4893-933e-70b610681365	hii master	f	2026-07-23 08:32:01.72	\N
 8c3ae92b-70ee-4c47-97da-0504907a44e9	ca5c9a45-28ae-4098-9d24-719b9b95d8d8	09bbb5ff-b01d-4893-933e-70b610681365	hii mnaster	f	2026-07-23 09:59:29.159	\N
+48b38218-7c1e-4259-9640-bf6fc4f07001	9a28f3a8-faa8-4850-9445-6045c6b60576	31abdf53-0840-4703-918c-a8cb6b81d84c	HII MASTER	f	2026-07-24 14:32:20.422	\N
+ac194855-17b9-479e-8b6c-da12092b1b8e	9a28f3a8-faa8-4850-9445-6045c6b60576	31abdf53-0840-4703-918c-a8cb6b81d84c	HELLO PROVIDER	f	2026-07-24 14:33:02.271	\N
 \.
 
 
 --
--- TOC entry 4995 (class 0 OID 25817)
+-- TOC entry 5002 (class 0 OID 25817)
 -- Dependencies: 222
 -- Data for Name: Notification; Type: TABLE DATA; Schema: public; Owner: postgres
 --
@@ -491,26 +533,33 @@ f5f839e5-dbef-4ac7-9a43-59e2dfee69a6	f0f160cd-65de-4f88-b85a-77729bbd91bc	APPLIC
 fc91ac71-b001-4431-82a8-bd07ed59626c	31abdf53-0840-4703-918c-a8cb6b81d84c	APPLICATION	Application Accepted	Your application for "image design" has been accepted.	f	2026-07-23 09:59:06.633
 4609f9f8-b92c-4985-ba34-ea0b5452071e	f0f160cd-65de-4f88-b85a-77729bbd91bc	CHAT	New Message	hii mnaster	f	2026-07-23 09:59:29.178
 70b7f1fb-3d0c-4087-a104-4fd9565baada	31abdf53-0840-4703-918c-a8cb6b81d84c	PROJECT	Submission Approved	Your submission has been approved by the provider.	f	2026-07-23 10:02:01.159
+43c649b0-c18f-443a-b21d-909fd55fc3e5	09bbb5ff-b01d-4893-933e-70b610681365	APPLICATION	New Application	Aarth Master applied to "HEALTH CARE".	f	2026-07-24 14:30:28.752
+e640e202-cb9a-48b8-96c0-f5c6466aecc8	09bbb5ff-b01d-4893-933e-70b610681365	APPLICATION	New Application	Aarth Master applied to "HEALTH CARE".	f	2026-07-24 14:31:34.55
+0b1fd7b4-2fc2-430e-9197-dc3bc90f3094	31abdf53-0840-4703-918c-a8cb6b81d84c	APPLICATION	Application Accepted	Your application for "HEALTH CARE" has been accepted.	f	2026-07-24 14:31:56.739
+54fbbd08-9a93-457f-af56-0299e05039cc	31abdf53-0840-4703-918c-a8cb6b81d84c	APPLICATION	Application Accepted	Your application for "HEALTH CARE" has been accepted.	f	2026-07-24 14:32:01.346
+23d2c56b-a92d-4657-9184-4667b9260f7a	31abdf53-0840-4703-918c-a8cb6b81d84c	CHAT	New Message	HII MASTER	f	2026-07-24 14:32:20.442
+8d110f4d-ce80-4808-bea2-469ba5269d3c	31abdf53-0840-4703-918c-a8cb6b81d84c	CHAT	New Message	HELLO PROVIDER	f	2026-07-24 14:33:02.297
+874a06e4-10c8-4daa-a3e2-4d67432dd9e8	09bbb5ff-b01d-4893-933e-70b610681365	APPLICATION	New Application	Aarth Master applied to "HEALTH CARE".	f	2026-07-24 15:51:49.236
 \.
 
 
 --
--- TOC entry 4997 (class 0 OID 33661)
+-- TOC entry 5004 (class 0 OID 33661)
 -- Dependencies: 224
 -- Data for Name: Payment; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-COPY public."Payment" (id, "submissionId", "projectId", "providerId", "userId", amount, status, "releasedAt", "createdAt", "updatedAt") FROM stdin;
-afc9027c-bbf5-4220-a536-362c63ffc3ba	b1e3b734-4cd5-4d19-b44d-b2a94cb05c31	d80283e8-bf69-4b2a-9d78-631898090ef8	09bbb5ff-b01d-4893-933e-70b610681365	31abdf53-0840-4703-918c-a8cb6b81d84c	5000	RELEASED	2026-07-22 05:45:13.236	2026-07-22 05:26:19.492	2026-07-22 05:45:13.238
-fbec4f31-cadf-4939-ad0f-0eb97b15903e	36287ada-098a-4ec5-8699-a89290a07d9f	d80283e8-bf69-4b2a-9d78-631898090ef8	09bbb5ff-b01d-4893-933e-70b610681365	31abdf53-0840-4703-918c-a8cb6b81d84c	5000	RELEASED	2026-07-22 06:16:29.273	2026-07-22 06:16:22.388	2026-07-22 06:16:29.275
-0826be18-026d-46aa-bab6-9c4ec85fe643	863db0d7-e665-408c-b382-f98ccb052daf	cceef37a-0ff0-4e03-8150-7ac73cbf55d6	09bbb5ff-b01d-4893-933e-70b610681365	31abdf53-0840-4703-918c-a8cb6b81d84c	200	RELEASED	2026-07-22 16:35:13.876	2026-07-22 16:35:09.636	2026-07-22 16:35:13.879
-23feead5-4ceb-44f4-b826-ef8939aee355	8878579b-e2a7-45a4-833a-a6265dd8a58e	1d10a900-0ae0-4c8f-a670-36caba8cbe38	09bbb5ff-b01d-4893-933e-70b610681365	31abdf53-0840-4703-918c-a8cb6b81d84c	25000	RELEASED	2026-07-23 08:34:35.449	2026-07-23 08:34:29.15	2026-07-23 08:34:35.45
-cedb078e-4fc9-4d18-bf43-7dacfca91c7b	3f8694d6-cd7c-4499-b26d-6fbc317e6e8f	75d898c2-c888-4564-98e7-f6907d25a38a	09bbb5ff-b01d-4893-933e-70b610681365	31abdf53-0840-4703-918c-a8cb6b81d84c	500	RELEASED	2026-07-23 10:02:08.481	2026-07-23 10:02:01.17	2026-07-23 10:02:08.482
+COPY public."Payment" (id, "submissionId", "projectId", "providerId", "userId", amount, "releasedAt", "createdAt", "updatedAt", status) FROM stdin;
+afc9027c-bbf5-4220-a536-362c63ffc3ba	b1e3b734-4cd5-4d19-b44d-b2a94cb05c31	d80283e8-bf69-4b2a-9d78-631898090ef8	09bbb5ff-b01d-4893-933e-70b610681365	31abdf53-0840-4703-918c-a8cb6b81d84c	5000	2026-07-22 05:45:13.236	2026-07-22 05:26:19.492	2026-07-22 05:45:13.238	PENDING
+fbec4f31-cadf-4939-ad0f-0eb97b15903e	36287ada-098a-4ec5-8699-a89290a07d9f	d80283e8-bf69-4b2a-9d78-631898090ef8	09bbb5ff-b01d-4893-933e-70b610681365	31abdf53-0840-4703-918c-a8cb6b81d84c	5000	2026-07-22 06:16:29.273	2026-07-22 06:16:22.388	2026-07-22 06:16:29.275	PENDING
+0826be18-026d-46aa-bab6-9c4ec85fe643	863db0d7-e665-408c-b382-f98ccb052daf	cceef37a-0ff0-4e03-8150-7ac73cbf55d6	09bbb5ff-b01d-4893-933e-70b610681365	31abdf53-0840-4703-918c-a8cb6b81d84c	200	2026-07-22 16:35:13.876	2026-07-22 16:35:09.636	2026-07-22 16:35:13.879	PENDING
+23feead5-4ceb-44f4-b826-ef8939aee355	8878579b-e2a7-45a4-833a-a6265dd8a58e	1d10a900-0ae0-4c8f-a670-36caba8cbe38	09bbb5ff-b01d-4893-933e-70b610681365	31abdf53-0840-4703-918c-a8cb6b81d84c	25000	2026-07-23 08:34:35.449	2026-07-23 08:34:29.15	2026-07-23 08:34:35.45	PENDING
+cedb078e-4fc9-4d18-bf43-7dacfca91c7b	3f8694d6-cd7c-4499-b26d-6fbc317e6e8f	75d898c2-c888-4564-98e7-f6907d25a38a	09bbb5ff-b01d-4893-933e-70b610681365	31abdf53-0840-4703-918c-a8cb6b81d84c	500	2026-07-23 10:02:08.481	2026-07-23 10:02:01.17	2026-07-23 10:02:08.482	PENDING
 \.
 
 
 --
--- TOC entry 4990 (class 0 OID 16499)
+-- TOC entry 4997 (class 0 OID 16499)
 -- Dependencies: 217
 -- Data for Name: Project; Type: TABLE DATA; Schema: public; Owner: postgres
 --
@@ -532,11 +581,13 @@ cceef37a-0ff0-4e03-8150-7ac73cbf55d6	image design	design the image	200	ui ux	202
 da4fe5e1-ff96-47bd-ae7b-c7cf6109f6d5	health care	monitor health like heart beat steps, calories etc	5000	react	2026-07-23 08:57:27.9	2026-07-23 08:57:27.9	OPEN	DIGITAL	09bbb5ff-b01d-4893-933e-70b610681365
 91a74a69-df71-42a4-9542-e1f21a23955c	website development	using react + tailwind	20000	react and tailwind	2026-07-23 08:59:34.064	2026-07-23 08:59:34.064	OPEN	DIGITAL	09bbb5ff-b01d-4893-933e-70b610681365
 75d898c2-c888-4564-98e7-f6907d25a38a	image design	design the imaghes	500	ui ux	2026-07-22 04:25:41.604	2026-07-23 10:02:08.488	COMPLETED	DIGITAL	09bbb5ff-b01d-4893-933e-70b610681365
+55380c51-1151-45b2-848d-71d9db2ebfc7	HEALTH CARE	MONITOR HEALTH	500	REACT	2026-07-24 14:19:01.525	2026-07-24 14:19:01.525	OPEN	DIGITAL	09bbb5ff-b01d-4893-933e-70b610681365
+aa9b0993-f24c-4f2b-8f75-e930b1035bdb	ABC project	project designing	500	ui ux	2026-07-24 15:54:17.477	2026-07-24 15:54:17.477	OPEN	DIGITAL	09bbb5ff-b01d-4893-933e-70b610681365
 \.
 
 
 --
--- TOC entry 4992 (class 0 OID 24899)
+-- TOC entry 4999 (class 0 OID 24899)
 -- Dependencies: 219
 -- Data for Name: Submission; Type: TABLE DATA; Schema: public; Owner: postgres
 --
@@ -552,36 +603,38 @@ b1e3b734-4cd5-4d19-b44d-b2a94cb05c31	be7061e7-57bb-4581-8a56-7fd88e4379ba	http:/
 863db0d7-e665-408c-b382-f98ccb052daf	1c8bef4b-363a-4c3c-bb3b-f983011d7690	http://localhost:3000/master/submit-work	http://localhost:3000/master/submit-work	design created as mentioned	APPROVED	2026-07-22 16:34:21.852	2026-07-22 16:35:09.609	\N	\N	\N	\N	perfect	2026-07-22 16:35:09.604	2026-07-22 16:35:09.604	09bbb5ff-b01d-4893-933e-70b610681365
 8878579b-e2a7-45a4-833a-a6265dd8a58e	aba82bc5-e662-4f78-81d8-18711085c8db	http://localhost:3000/master/submit-work	http://localhost:3000/master/submit-work	gdjgibh hdfjhclnvkjn	APPROVED	2026-07-23 08:33:44.481	2026-07-23 08:34:29.125	\N	\N	\N	\N	good\n	2026-07-23 08:34:29.124	2026-07-23 08:34:29.124	09bbb5ff-b01d-4893-933e-70b610681365
 3f8694d6-cd7c-4499-b26d-6fbc317e6e8f	47173cdb-227c-45c8-b1ba-b928ba134ad6	http://localhost:3000/master/submit-work	http://localhost:3000/master/submit-work	gooj 	APPROVED	2026-07-23 10:01:01.147	2026-07-23 10:02:01.135	\N	\N	\N	\N	good job\n	2026-07-23 10:02:01.13	2026-07-23 10:02:01.13	09bbb5ff-b01d-4893-933e-70b610681365
+5c29f3a6-a202-4b4f-8395-836557c2ebc4	382b8f22-cb27-4dab-91be-dcb7aae4648b	http://localhost:3000/master/submit-work	http://localhost:3000/master/submit-work	HEALTH MONTIORNING APP DEVELOPED	PENDING	2026-07-24 14:33:52.965	2026-07-24 14:33:52.965	\N	\N	\N	\N	\N	\N	\N	\N
+7797084f-bec5-42ac-881f-0cea739384f3	398c791d-6603-4760-ab44-f5bfde2d2337	http://localhost:3000/master/submit-work	http://localhost:3000/master/submit-work	job done	PENDING	2026-07-24 15:52:41.248	2026-07-24 15:52:41.248	\N	\N	\N	\N	\N	\N	\N	\N
 \.
 
 
 --
--- TOC entry 4989 (class 0 OID 16417)
+-- TOC entry 4996 (class 0 OID 16417)
 -- Dependencies: 216
 -- Data for Name: User; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-COPY public."User" (id, name, email, password, role, skills, experience, rating, "createdAt", "updatedAt", "resetToken", "resetTokenExpiry", "kycAddress", "kycCity", "kycDob", "kycGender", "kycIdPhoto", "kycPanCard", "kycPhone", "kycPincode", "kycProfilePhoto", "kycScore", "kycSelfie", "kycState", "kycStatus", "kycVerificationReport", "kycVerifiedAt") FROM stdin;
-cb56599e-19a5-4a77-bdf3-d3426d243c4f	Rahul	rahul@example.com	$2b$10$JKK5WogUDT1RWD/T4wgcueW1QJBo7.ceCirSnguLAOdH6Yb2rlKoK	MASTER	React, Node.js	3	0	2026-06-16 08:53:59.571	2026-06-16 08:53:59.571	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	NOT_STARTED	\N	\N
-fb4b2b70-cfa2-442e-bf3a-c8d61ce5ec5f	Rahul	rahul@gmail.com	$2b$10$awQkjy7XxVk.K.BLq3C7FexVUoan3ekUZ996Et2zb9sUAQYSmx4H.	MASTER	\N	\N	0	2026-06-27 11:57:00.737	2026-06-27 11:57:00.737	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	NOT_STARTED	\N	\N
-244ce574-406e-4820-aa59-8e29ba187a8a	Anjali	anjali@gmail.com	$2b$10$oZytNUeBlTNLxzORFQ/19uJZazMl/s2Sgw3Lsffazgp.JXtTTF.i.	PROVIDER	\N	\N	0	2026-06-27 12:06:18.496	2026-06-27 12:06:18.496	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	NOT_STARTED	\N	\N
-fee9524f-6c9d-4de6-8e2e-52289e3b55f1	John	john@gmail.com	123456	MASTER	React,NestJS,Node	3	0	2026-06-27 12:07:23.203	2026-06-27 12:07:23.203	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	NOT_STARTED	\N	\N
-dad4ebcf-1b3e-4c69-8e21-99d9e0c62c85	Aarthi	aarthi@gmail.com	$2b$10$QBv9KYxZStCD1mJxIqMjOeQcITl15waNmYQPHblRd2CW/W1I.MdR2	PROVIDER	React,NestJS	2	0	2026-06-27 12:49:41.809	2026-06-27 12:49:41.809	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	NOT_STARTED	\N	\N
-ce73303d-b022-4f63-819c-9c8dd585bc53	Aarthi	aarthi12@gmail.com	$2b$10$AmYy7izYqjHT8Q0o37MlSeaeS5yvLGZiyOu3SATo98Y6GpQahpW5i	PROVIDER	React,NestJS	2	0	2026-06-27 12:55:37.458	2026-06-27 12:55:37.458	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	NOT_STARTED	\N	\N
-72f662ce-8b76-4f9f-9958-39679b246f92	Rahul	rahul@test.com	$2b$10$c3/xdMwKnDZw7EJQLYoW5uZ2q4aw1CXhaogoLlUxFqiHSHHihV3Z.	MASTER	\N	\N	0	2026-07-22 13:13:17.397	2026-07-22 13:13:17.397	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	NOT_STARTED	\N	\N
-65b99d46-5260-4ab9-a4d1-f8da61d8a9c7	priya 	priya@example.com	$2b$10$8iuyNbHdMzOXPKagi0l47.yWhqM/tNTYLlvWxY.2d2R1/CS7.oXnW	MASTER	\N	\N	0	2026-07-22 13:43:04.486	2026-07-22 13:43:04.486	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	NOT_STARTED	\N	\N
-715e8413-e5e2-48e6-9186-39b3a6c41e2a	Aarth	aarth@example.com	$2b$10$aNkkArZNKEXCwEePH0q.gOKRxqv6oUEBzcX/5P7035cc7WD98GKyK	MASTER	React, Next.js, TypeScript	2	0	2026-06-16 06:21:03.604	2026-07-19 18:45:55.837	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	NOT_STARTED	\N	\N
-09bbb5ff-b01d-4893-933e-70b610681365	Aarth Provider	provider@example.com	$2b$10$iEIj5rLIYY/vwod6CXP5lO32LSLDGrNRiALjmGbbicwpjlO17Rrd2	PROVIDER	\N	\N	0	2026-07-03 09:53:08.459	2026-07-19 19:05:08.249	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	NOT_STARTED	\N	\N
-80e83419-c21e-46a9-aba0-32011b1444bb	Test KYC	test-kyc-1503779495@test.com	$2b$10$9wuQOIqNSZfD1tXt459BWuXr75eOlgTzkgTza0ngYMdIkx3VROUa2	PROVIDER	\N	\N	0	2026-07-22 09:05:01.895	2026-07-22 09:05:01.895	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	NOT_STARTED	\N	\N
-3e7f8307-c61e-4f5e-8a9f-81aab3e5c250	Test KYC 3	test-kyc3-1001979652@test.com	$2b$10$7wFWntHysPTWOvHoCsS4eeYhDqp7ugG0pw2ogaOevsc6TBjj8MKBG	PROVIDER	\N	\N	0	2026-07-22 09:06:01.649	2026-07-22 09:06:01.649	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	NOT_STARTED	\N	\N
-e954c976-567a-484f-a0da-37c264d560ad	Test User	test-1784720784765@test.com	$2b$10$UAFiiMujp/nXeu1MNhNH8eQcEX7w.mqjsZtnS9gX72fw7p6RYCrbK	PROVIDER	\N	\N	0	2026-07-22 11:46:24.986	2026-07-22 11:46:24.986	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	NOT_STARTED	\N	\N
-31abdf53-0840-4703-918c-a8cb6b81d84c	Aarth Master	master@example.com	$2b$10$bPTxYDYE5Ctfzmhxd2qM4uBOqo/Ovgb2oWUty7Ka1WCwKHc63OAvC	MASTER	\N	\N	0	2026-07-03 09:53:31.96	2026-07-22 12:58:37.825	\N	\N	Manjunatha layout devasandra	bangalore	2005-12-14	female	adhar.png	pan.jpg	08904738926	560036	selfie.jfif	95	selfie.jfif	Karnataka	VERIFIED	{"status": "VERIFIED", "faceMatch": "96%", "fraudRisk": "Low", "identityMatch": "97%", "ocrConfidence": "98%", "recommendation": "User identity successfully verified. Welcome to WorkLancer AI!", "documentQuality": "Good", "verificationScore": "95/100"}	2026-07-22 12:58:37.818
-f0f160cd-65de-4f88-b85a-77729bbd91bc	Aarthivalavan	aarthi@example.com	$2b$10$eq1E5XkNTPvtiZiCkWd.Vu0zkFLNEozbA3MXgw7e6nhuZlSOYF46q	MASTER	\N	\N	0	2026-07-22 12:59:53.823	2026-07-23 08:30:25.119	\N	\N	Manjunatha layout devasandra	bangalore	2005-12-12	female	adhar.png	pan.jpg	08904738926	560036	selfie.jfif	90	selfie.jfif	Karnataka	VERIFIED	{"status": "VERIFIED", "faceMatch": "94%", "fraudRisk": "Low", "identityMatch": "95%", "ocrConfidence": "96%", "recommendation": "Identity verified successfully.", "documentQuality": "Good", "verificationScore": "90/100"}	2026-07-23 08:30:25.102
+COPY public."User" (id, name, email, password, role, skills, experience, rating, "createdAt", "updatedAt", "resetToken", "resetTokenExpiry", "kycAddress", "kycCity", "kycDob", "kycGender", "kycIdPhoto", "kycPanCard", "kycPhone", "kycPincode", "kycProfilePhoto", "kycScore", "kycSelfie", "kycState", "kycStatus", "kycVerificationReport", "kycVerifiedAt", availability, avatar, bio, "businessAddress", "companyDescription", "companyName", "githubUrl", "hourlyRate", industry, "linkedinUrl", location, phone, "portfolioLink", "providerType", website, "companySize", "contactPerson", "companyRegistrationNumber", "gstNumber", "preferredRole", resume) FROM stdin;
+cb56599e-19a5-4a77-bdf3-d3426d243c4f	Rahul	rahul@example.com	$2b$10$JKK5WogUDT1RWD/T4wgcueW1QJBo7.ceCirSnguLAOdH6Yb2rlKoK	MASTER	React, Node.js	3	0	2026-06-16 08:53:59.571	2026-06-16 08:53:59.571	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	NOT_STARTED	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N
+fb4b2b70-cfa2-442e-bf3a-c8d61ce5ec5f	Rahul	rahul@gmail.com	$2b$10$awQkjy7XxVk.K.BLq3C7FexVUoan3ekUZ996Et2zb9sUAQYSmx4H.	MASTER	\N	\N	0	2026-06-27 11:57:00.737	2026-06-27 11:57:00.737	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	NOT_STARTED	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N
+244ce574-406e-4820-aa59-8e29ba187a8a	Anjali	anjali@gmail.com	$2b$10$oZytNUeBlTNLxzORFQ/19uJZazMl/s2Sgw3Lsffazgp.JXtTTF.i.	PROVIDER	\N	\N	0	2026-06-27 12:06:18.496	2026-06-27 12:06:18.496	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	NOT_STARTED	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N
+fee9524f-6c9d-4de6-8e2e-52289e3b55f1	John	john@gmail.com	123456	MASTER	React,NestJS,Node	3	0	2026-06-27 12:07:23.203	2026-06-27 12:07:23.203	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	NOT_STARTED	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N
+dad4ebcf-1b3e-4c69-8e21-99d9e0c62c85	Aarthi	aarthi@gmail.com	$2b$10$QBv9KYxZStCD1mJxIqMjOeQcITl15waNmYQPHblRd2CW/W1I.MdR2	PROVIDER	React,NestJS	2	0	2026-06-27 12:49:41.809	2026-06-27 12:49:41.809	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	NOT_STARTED	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N
+ce73303d-b022-4f63-819c-9c8dd585bc53	Aarthi	aarthi12@gmail.com	$2b$10$AmYy7izYqjHT8Q0o37MlSeaeS5yvLGZiyOu3SATo98Y6GpQahpW5i	PROVIDER	React,NestJS	2	0	2026-06-27 12:55:37.458	2026-06-27 12:55:37.458	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	NOT_STARTED	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N
+72f662ce-8b76-4f9f-9958-39679b246f92	Rahul	rahul@test.com	$2b$10$c3/xdMwKnDZw7EJQLYoW5uZ2q4aw1CXhaogoLlUxFqiHSHHihV3Z.	MASTER	\N	\N	0	2026-07-22 13:13:17.397	2026-07-22 13:13:17.397	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	NOT_STARTED	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N
+65b99d46-5260-4ab9-a4d1-f8da61d8a9c7	priya 	priya@example.com	$2b$10$8iuyNbHdMzOXPKagi0l47.yWhqM/tNTYLlvWxY.2d2R1/CS7.oXnW	MASTER	\N	\N	0	2026-07-22 13:43:04.486	2026-07-22 13:43:04.486	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	NOT_STARTED	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N
+715e8413-e5e2-48e6-9186-39b3a6c41e2a	Aarth	aarth@example.com	$2b$10$aNkkArZNKEXCwEePH0q.gOKRxqv6oUEBzcX/5P7035cc7WD98GKyK	MASTER	React, Next.js, TypeScript	2	0	2026-06-16 06:21:03.604	2026-07-19 18:45:55.837	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	NOT_STARTED	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N
+09bbb5ff-b01d-4893-933e-70b610681365	Aarth Provider	provider@example.com	$2b$10$iEIj5rLIYY/vwod6CXP5lO32LSLDGrNRiALjmGbbicwpjlO17Rrd2	PROVIDER	\N	\N	0	2026-07-03 09:53:08.459	2026-07-19 19:05:08.249	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	NOT_STARTED	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N
+80e83419-c21e-46a9-aba0-32011b1444bb	Test KYC	test-kyc-1503779495@test.com	$2b$10$9wuQOIqNSZfD1tXt459BWuXr75eOlgTzkgTza0ngYMdIkx3VROUa2	PROVIDER	\N	\N	0	2026-07-22 09:05:01.895	2026-07-22 09:05:01.895	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	NOT_STARTED	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N
+3e7f8307-c61e-4f5e-8a9f-81aab3e5c250	Test KYC 3	test-kyc3-1001979652@test.com	$2b$10$7wFWntHysPTWOvHoCsS4eeYhDqp7ugG0pw2ogaOevsc6TBjj8MKBG	PROVIDER	\N	\N	0	2026-07-22 09:06:01.649	2026-07-22 09:06:01.649	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	NOT_STARTED	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N
+e954c976-567a-484f-a0da-37c264d560ad	Test User	test-1784720784765@test.com	$2b$10$UAFiiMujp/nXeu1MNhNH8eQcEX7w.mqjsZtnS9gX72fw7p6RYCrbK	PROVIDER	\N	\N	0	2026-07-22 11:46:24.986	2026-07-22 11:46:24.986	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	NOT_STARTED	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N
+31abdf53-0840-4703-918c-a8cb6b81d84c	Aarth Master	master@example.com	$2b$10$bPTxYDYE5Ctfzmhxd2qM4uBOqo/Ovgb2oWUty7Ka1WCwKHc63OAvC	MASTER	\N	\N	0	2026-07-03 09:53:31.96	2026-07-22 12:58:37.825	\N	\N	Manjunatha layout devasandra	bangalore	2005-12-14	female	adhar.png	pan.jpg	08904738926	560036	selfie.jfif	95	selfie.jfif	Karnataka	VERIFIED	{"status": "VERIFIED", "faceMatch": "96%", "fraudRisk": "Low", "identityMatch": "97%", "ocrConfidence": "98%", "recommendation": "User identity successfully verified. Welcome to WorkLancer AI!", "documentQuality": "Good", "verificationScore": "95/100"}	2026-07-22 12:58:37.818	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N
+f0f160cd-65de-4f88-b85a-77729bbd91bc	Aarthivalavan	aarthi@example.com	$2b$10$eq1E5XkNTPvtiZiCkWd.Vu0zkFLNEozbA3MXgw7e6nhuZlSOYF46q	MASTER	\N	\N	0	2026-07-22 12:59:53.823	2026-07-23 08:30:25.119	\N	\N	Manjunatha layout devasandra	bangalore	2005-12-12	female	adhar.png	pan.jpg	08904738926	560036	selfie.jfif	90	selfie.jfif	Karnataka	VERIFIED	{"status": "VERIFIED", "faceMatch": "94%", "fraudRisk": "Low", "identityMatch": "95%", "ocrConfidence": "96%", "recommendation": "Identity verified successfully.", "documentQuality": "Good", "verificationScore": "90/100"}	2026-07-23 08:30:25.102	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N
 \.
 
 
 --
--- TOC entry 4988 (class 0 OID 16400)
+-- TOC entry 4995 (class 0 OID 16400)
 -- Dependencies: 215
 -- Data for Name: _prisma_migrations; Type: TABLE DATA; Schema: public; Owner: postgres
 --
@@ -604,11 +657,13 @@ c413e64e-8fec-4492-9145-15f2412ae49f	a8724adec5f0dd4b1fbcc50194b0db383b681bfd470
 a7fa898a-3841-4167-92b7-2247c25dbe7c	a274582b6e821605ac27d3b57c872dca878d88a09556404889d955968e4bcebf	2026-07-21 12:01:23.437015+05:30	20260721113000_add_submission_review	\N	\N	2026-07-21 12:01:23.419096+05:30	1
 b897213f-d031-4548-8ad9-65872b8ed788	c796f6a0130f0f90e5edb6dd0810dad868c6e8d9689d35d693f4b9a79ca836c0	2026-07-22 09:59:39.691377+05:30	20260722042939_add_payment	\N	\N	2026-07-22 09:59:39.349847+05:30	1
 dc77b716-c052-4c4e-864b-ddf6942e4ebc	31ba7d4dee547b504d049371d37e4fddde993ab3bac0fc930d2e87fd86220d91	2026-07-22 13:11:21.344447+05:30	20260722074121_add_kyc_fields	\N	\N	2026-07-22 13:11:21.304543+05:30	1
+8634f3c4-c64e-4e50-87ec-5565cba81c64	41fd7a3bab3679b5bbba7a066dcf3dfe2e929b940f832ccae70325fd3dfb29cb	2026-07-24 13:38:49.586655+05:30	20260724080849_add_profile_fields	\N	\N	2026-07-24 13:38:49.572143+05:30	1
+50f526fc-4045-4d7d-8c0e-b0431910c145	37826f0d6b284ed55ebcf967a48eb9a023dc4b240437b3d9bfa53a2c0f825103	2026-07-24 13:43:54.661987+05:30	20260724081354_add_contact_person_company_size	\N	\N	2026-07-24 13:43:54.653842+05:30	1
 \.
 
 
 --
--- TOC entry 4829 (class 2606 OID 27737)
+-- TOC entry 4832 (class 2606 OID 27737)
 -- Name: AIProjectPlan AIProjectPlan_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -617,7 +672,7 @@ ALTER TABLE ONLY public."AIProjectPlan"
 
 
 --
--- TOC entry 4818 (class 2606 OID 16573)
+-- TOC entry 4821 (class 2606 OID 16573)
 -- Name: Application Application_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -626,7 +681,7 @@ ALTER TABLE ONLY public."Application"
 
 
 --
--- TOC entry 4823 (class 2606 OID 25259)
+-- TOC entry 4826 (class 2606 OID 25259)
 -- Name: Conversation Conversation_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -635,7 +690,7 @@ ALTER TABLE ONLY public."Conversation"
 
 
 --
--- TOC entry 4825 (class 2606 OID 25268)
+-- TOC entry 4828 (class 2606 OID 25268)
 -- Name: Message Message_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -644,7 +699,7 @@ ALTER TABLE ONLY public."Message"
 
 
 --
--- TOC entry 4827 (class 2606 OID 25825)
+-- TOC entry 4830 (class 2606 OID 25825)
 -- Name: Notification Notification_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -653,7 +708,7 @@ ALTER TABLE ONLY public."Notification"
 
 
 --
--- TOC entry 4831 (class 2606 OID 33669)
+-- TOC entry 4834 (class 2606 OID 33669)
 -- Name: Payment Payment_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -662,7 +717,7 @@ ALTER TABLE ONLY public."Payment"
 
 
 --
--- TOC entry 4816 (class 2606 OID 16507)
+-- TOC entry 4819 (class 2606 OID 16507)
 -- Name: Project Project_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -671,7 +726,7 @@ ALTER TABLE ONLY public."Project"
 
 
 --
--- TOC entry 4821 (class 2606 OID 24907)
+-- TOC entry 4824 (class 2606 OID 24907)
 -- Name: Submission Submission_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -680,7 +735,7 @@ ALTER TABLE ONLY public."Submission"
 
 
 --
--- TOC entry 4814 (class 2606 OID 16425)
+-- TOC entry 4817 (class 2606 OID 16425)
 -- Name: User User_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -689,7 +744,7 @@ ALTER TABLE ONLY public."User"
 
 
 --
--- TOC entry 4811 (class 2606 OID 16408)
+-- TOC entry 4814 (class 2606 OID 16408)
 -- Name: _prisma_migrations _prisma_migrations_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -698,7 +753,7 @@ ALTER TABLE ONLY public._prisma_migrations
 
 
 --
--- TOC entry 4832 (class 1259 OID 33670)
+-- TOC entry 4835 (class 1259 OID 33670)
 -- Name: Payment_submissionId_key; Type: INDEX; Schema: public; Owner: postgres
 --
 
@@ -706,7 +761,7 @@ CREATE UNIQUE INDEX "Payment_submissionId_key" ON public."Payment" USING btree (
 
 
 --
--- TOC entry 4819 (class 1259 OID 24908)
+-- TOC entry 4822 (class 1259 OID 24908)
 -- Name: Submission_applicationId_key; Type: INDEX; Schema: public; Owner: postgres
 --
 
@@ -714,7 +769,7 @@ CREATE UNIQUE INDEX "Submission_applicationId_key" ON public."Submission" USING 
 
 
 --
--- TOC entry 4812 (class 1259 OID 16426)
+-- TOC entry 4815 (class 1259 OID 16426)
 -- Name: User_email_key; Type: INDEX; Schema: public; Owner: postgres
 --
 
@@ -722,7 +777,7 @@ CREATE UNIQUE INDEX "User_email_key" ON public."User" USING btree (email);
 
 
 --
--- TOC entry 4843 (class 2606 OID 27744)
+-- TOC entry 4846 (class 2606 OID 27744)
 -- Name: AIProjectPlan AIProjectPlan_projectId_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -731,79 +786,79 @@ ALTER TABLE ONLY public."AIProjectPlan"
 
 
 --
--- TOC entry 4844 (class 2606 OID 27739)
+-- TOC entry 4847 (class 2606 OID 35779)
 -- Name: AIProjectPlan AIProjectPlan_userId_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
 ALTER TABLE ONLY public."AIProjectPlan"
-    ADD CONSTRAINT "AIProjectPlan_userId_fkey" FOREIGN KEY ("userId") REFERENCES public."User"(id) ON UPDATE CASCADE ON DELETE RESTRICT;
+    ADD CONSTRAINT "AIProjectPlan_userId_fkey" FOREIGN KEY ("userId") REFERENCES public."User"(id) ON UPDATE CASCADE ON DELETE CASCADE;
 
 
 --
--- TOC entry 4834 (class 2606 OID 16579)
+-- TOC entry 4837 (class 2606 OID 35749)
 -- Name: Application Application_projectId_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
 ALTER TABLE ONLY public."Application"
-    ADD CONSTRAINT "Application_projectId_fkey" FOREIGN KEY ("projectId") REFERENCES public."Project"(id) ON UPDATE CASCADE ON DELETE RESTRICT;
+    ADD CONSTRAINT "Application_projectId_fkey" FOREIGN KEY ("projectId") REFERENCES public."Project"(id) ON UPDATE CASCADE ON DELETE CASCADE;
 
 
 --
--- TOC entry 4835 (class 2606 OID 16574)
+-- TOC entry 4838 (class 2606 OID 35744)
 -- Name: Application Application_userId_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
 ALTER TABLE ONLY public."Application"
-    ADD CONSTRAINT "Application_userId_fkey" FOREIGN KEY ("userId") REFERENCES public."User"(id) ON UPDATE CASCADE ON DELETE RESTRICT;
+    ADD CONSTRAINT "Application_userId_fkey" FOREIGN KEY ("userId") REFERENCES public."User"(id) ON UPDATE CASCADE ON DELETE CASCADE;
 
 
 --
--- TOC entry 4837 (class 2606 OID 25279)
+-- TOC entry 4840 (class 2606 OID 35764)
 -- Name: Conversation Conversation_masterId_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
 ALTER TABLE ONLY public."Conversation"
-    ADD CONSTRAINT "Conversation_masterId_fkey" FOREIGN KEY ("masterId") REFERENCES public."User"(id) ON UPDATE CASCADE ON DELETE RESTRICT;
+    ADD CONSTRAINT "Conversation_masterId_fkey" FOREIGN KEY ("masterId") REFERENCES public."User"(id) ON UPDATE CASCADE ON DELETE CASCADE;
 
 
 --
--- TOC entry 4838 (class 2606 OID 25269)
+-- TOC entry 4841 (class 2606 OID 35754)
 -- Name: Conversation Conversation_projectId_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
 ALTER TABLE ONLY public."Conversation"
-    ADD CONSTRAINT "Conversation_projectId_fkey" FOREIGN KEY ("projectId") REFERENCES public."Project"(id) ON UPDATE CASCADE ON DELETE RESTRICT;
+    ADD CONSTRAINT "Conversation_projectId_fkey" FOREIGN KEY ("projectId") REFERENCES public."Project"(id) ON UPDATE CASCADE ON DELETE CASCADE;
 
 
 --
--- TOC entry 4839 (class 2606 OID 25274)
+-- TOC entry 4842 (class 2606 OID 35759)
 -- Name: Conversation Conversation_providerId_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
 ALTER TABLE ONLY public."Conversation"
-    ADD CONSTRAINT "Conversation_providerId_fkey" FOREIGN KEY ("providerId") REFERENCES public."User"(id) ON UPDATE CASCADE ON DELETE RESTRICT;
+    ADD CONSTRAINT "Conversation_providerId_fkey" FOREIGN KEY ("providerId") REFERENCES public."User"(id) ON UPDATE CASCADE ON DELETE CASCADE;
 
 
 --
--- TOC entry 4840 (class 2606 OID 25284)
+-- TOC entry 4843 (class 2606 OID 35769)
 -- Name: Message Message_conversationId_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
 ALTER TABLE ONLY public."Message"
-    ADD CONSTRAINT "Message_conversationId_fkey" FOREIGN KEY ("conversationId") REFERENCES public."Conversation"(id) ON UPDATE CASCADE ON DELETE RESTRICT;
+    ADD CONSTRAINT "Message_conversationId_fkey" FOREIGN KEY ("conversationId") REFERENCES public."Conversation"(id) ON UPDATE CASCADE ON DELETE CASCADE;
 
 
 --
--- TOC entry 4841 (class 2606 OID 25289)
+-- TOC entry 4844 (class 2606 OID 35774)
 -- Name: Message Message_senderId_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
 ALTER TABLE ONLY public."Message"
-    ADD CONSTRAINT "Message_senderId_fkey" FOREIGN KEY ("senderId") REFERENCES public."User"(id) ON UPDATE CASCADE ON DELETE RESTRICT;
+    ADD CONSTRAINT "Message_senderId_fkey" FOREIGN KEY ("senderId") REFERENCES public."User"(id) ON UPDATE CASCADE ON DELETE CASCADE;
 
 
 --
--- TOC entry 4842 (class 2606 OID 25826)
+-- TOC entry 4845 (class 2606 OID 25826)
 -- Name: Notification Notification_userId_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -812,16 +867,52 @@ ALTER TABLE ONLY public."Notification"
 
 
 --
--- TOC entry 4833 (class 2606 OID 27944)
+-- TOC entry 4848 (class 2606 OID 35789)
+-- Name: Payment Payment_projectId_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public."Payment"
+    ADD CONSTRAINT "Payment_projectId_fkey" FOREIGN KEY ("projectId") REFERENCES public."Project"(id) ON UPDATE CASCADE ON DELETE RESTRICT;
+
+
+--
+-- TOC entry 4849 (class 2606 OID 35794)
+-- Name: Payment Payment_providerId_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public."Payment"
+    ADD CONSTRAINT "Payment_providerId_fkey" FOREIGN KEY ("providerId") REFERENCES public."User"(id) ON UPDATE CASCADE ON DELETE CASCADE;
+
+
+--
+-- TOC entry 4850 (class 2606 OID 35784)
+-- Name: Payment Payment_submissionId_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public."Payment"
+    ADD CONSTRAINT "Payment_submissionId_fkey" FOREIGN KEY ("submissionId") REFERENCES public."Submission"(id) ON UPDATE CASCADE ON DELETE RESTRICT;
+
+
+--
+-- TOC entry 4851 (class 2606 OID 35799)
+-- Name: Payment Payment_userId_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public."Payment"
+    ADD CONSTRAINT "Payment_userId_fkey" FOREIGN KEY ("userId") REFERENCES public."User"(id) ON UPDATE CASCADE ON DELETE CASCADE;
+
+
+--
+-- TOC entry 4836 (class 2606 OID 35739)
 -- Name: Project Project_providerId_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
 ALTER TABLE ONLY public."Project"
-    ADD CONSTRAINT "Project_providerId_fkey" FOREIGN KEY ("providerId") REFERENCES public."User"(id) ON UPDATE CASCADE ON DELETE RESTRICT;
+    ADD CONSTRAINT "Project_providerId_fkey" FOREIGN KEY ("providerId") REFERENCES public."User"(id) ON UPDATE CASCADE ON DELETE CASCADE;
 
 
 --
--- TOC entry 4836 (class 2606 OID 24909)
+-- TOC entry 4839 (class 2606 OID 24909)
 -- Name: Submission Submission_applicationId_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -829,11 +920,11 @@ ALTER TABLE ONLY public."Submission"
     ADD CONSTRAINT "Submission_applicationId_fkey" FOREIGN KEY ("applicationId") REFERENCES public."Application"(id) ON UPDATE CASCADE ON DELETE RESTRICT;
 
 
--- Completed on 2026-07-24 13:24:27
+-- Completed on 2026-07-24 22:55:40
 
 --
 -- PostgreSQL database dump complete
 --
 
-\unrestrict kc0qJyKQLqqjLGQNdVyM034WmrvTmYijUrcolDO6pPV51DuIKHsfax0h48jsGp3
+\unrestrict eqbYAok6INiel7H8PMYx6q2hrrOnVCarQWQcuG0xre5tqkClaBTjbNVZjo0uAIn
 
