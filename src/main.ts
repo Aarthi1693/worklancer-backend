@@ -14,7 +14,10 @@ async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
 
   app.enableCors({
-    origin: ['http://localhost:3000'],
+   app.enableCors({
+  origin: true,
+  credentials: true,
+});
     credentials: true,
   });
 
@@ -36,11 +39,11 @@ async function bootstrap() {
   // Serve uploaded files
   app.use('/uploads', express.static(uploadPath));
 
-  await app.listen(process.env.PORT ?? 5000);
+  const port = Number(process.env.PORT) || 5000;
 
-  console.log(
-    `🚀 Server running at http://localhost:${process.env.PORT ?? 5000}`,
-  );
+await app.listen(port, '0.0.0.0');
+
+console.log(`🚀 Server running on port ${port}`);
 }
 
 void bootstrap();
