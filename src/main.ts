@@ -26,14 +26,12 @@ async function bootstrap() {
     }),
   );
 
-  // Create uploads folder if it doesn't exist
   const uploadPath = join(process.cwd(), 'uploads');
 
   if (!existsSync(uploadPath)) {
     mkdirSync(uploadPath, { recursive: true });
   }
 
-  // Serve uploaded files
   app.use('/uploads', express.static(uploadPath));
 
   const port = Number(process.env.PORT) || 5000;
@@ -43,4 +41,4 @@ async function bootstrap() {
   console.log(`🚀 Server running on port ${port}`);
 }
 
-void bootstrap();
+bootstrap();

@@ -18,6 +18,8 @@ import { PaymentsModule } from './payments/payments.module';
 import { KycModule } from './kyc/kyc.module';
 import { OcrModule } from './ocr/ocr.module';
 import { AdminModule } from './admin/admin.module';
+import { AppController } from './app.controller';
+import { AppService } from './app.service';
 
 @Module({
   imports: [
@@ -53,5 +55,9 @@ import { AdminModule } from './admin/admin.module';
     OcrModule,
     AdminModule,
   ],
+
+  controllers: [AppController],
+
+  providers: [AppService],
 })
 export class AppModule {}
